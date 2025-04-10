@@ -9,3 +9,16 @@ aside{
     padding-bottom: 10px;
     width: 90%;
 }
+div{
+    padding-left: 2%;
+    text-decoration: underline double;
+    font-size: 200%;
+}
+.projet1{
+    display: flex;
+    justify-content: start;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+}
