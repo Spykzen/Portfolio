@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./image/logo.png">
+    <title>Portfolio Battista Nicolas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Fond de page animé -->
+    <video autoplay muted loop class="fond_etoile">
+        <source src="./image/fond_etoile.mp4" type="video/mp4">
+        Ton navigateur ne supporte pas la vidéo.
+    </video>
+    <nav>
+        <section>
+            <img src="./image/logo.png" alt="Logo star wars" class="logo">
+            <b>Battista Nicolas</b>
+        </section>
+        <!-- Audio avec bouton déclencheur -->
+        <section>
+            <button onclick="document.getElementById('audio').play()" class="music">
+                Musique ▶
+            </button>
+            <audio id="audio" loop controls>
+                <source src="./music/music_accueil.mp3" type="audio/mpeg">
+                Ton navigateur ne supporte pas l'audio.
+            </audio>
+        </section>
+        <section class="navbar">
+            <a href="#">Biographie</a>
+            <!-- Page Biographie : Faire le style "intro" épisode Star Wars : "Dans une galaxie lointaine..." -->
+            <a href="./projets.html">Projets</a>
+            <a href="#">Compétences</a>
+        </section>
+    </nav>
+    <p>body</p>
+</body>
+<footer>
+    <p>footer</p>
+    <!-- Mettre les contacts -->
+</footer>
+</html>
