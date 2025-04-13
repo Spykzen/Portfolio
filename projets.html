@@ -18,15 +18,30 @@
             <a href="./index.html"><img src="./image/logo.png" alt="Logo star wars" class="logo"></a>
             <b>Battista Nicolas</b>
         </section>
+
+        <!-- Fait par ChatGPT -->
         <section>
-            <button onclick="document.getElementById('audio').play()" class="music">
-                Musique ▶
-            </button>
-            <audio id="audio" loop controls>
-                <source src="./music/Duel_Of_The_Fates.mp3" type="audio/mpeg">
-                Ton navigateur ne supporte pas l'audio.
-            </audio>
+            <button onclick="togglePlay()" class="music" id="musicBtn">Musique ▶</button>
+
+            <audio id="audio" src="./music/Duel_Of_The_Fates.mp3"></audio>
+            
+            <script>
+                function togglePlay() {
+                    const audio = document.getElementById('audio');
+                    const btn = document.getElementById('musicBtn');
+                
+                    if (audio.paused) {
+                        audio.play();
+                        btn.textContent = 'Pause ⏸';
+                    } 
+                    else {
+                        audio.pause();
+                        btn.textContent = 'Musique ▶';
+                    }
+                }
+            </script>
         </section>
+
         <section class="navbar">
             <a href="./index.html">Accueil</a>
             <a href="#">Biographie</a>
