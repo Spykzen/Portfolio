@@ -19,11 +19,11 @@
             <b>Battista Nicolas</b>
         </section>
         <section>
-            <button onclick="document.getElementById('audio').play()" class="music_accueil">
+            <button onclick="document.getElementById('audio').play()" class="music">
                 Musique ▶
             </button>
             <audio id="audio" loop controls>
-                <source src="./music/..." type="audio/mpeg">
+                <source src="./music/Duel_Of_The_Fates.mp3" type="audio/mpeg">
                 Ton navigateur ne supporte pas l'audio.
             </audio>
         </section>
@@ -36,18 +36,143 @@
         </section>
     </nav>
     <aside>
-        <div>Mes projets :</div>
-        <button class="projet1"><img src="./image/sabre_laser/sabre_laser_bleu-Photoroom.png" alt="Sabre laser bleu" class="sabre_laser"></button>
-        <img src="./image/sabre_laser/sabre_laser_orange-Photoroom.png" alt="Sabre laser orange" class="sabre_laser">
-        <img src="./image/sabre_laser/sabre_laser_vert2-Photoroom.png" alt="Sabre laser vert moins stylé" class="sabre_laser">
-        <img src="./image/sabre_laser/sabre_laser_noir-Photoroom.png" alt="Sabre laser noir" class="sabre_laser">
-        <img src="./image/sabre_laser/sabre_laser_rouge-Photoroom.png" alt="Sabre laser rouge" class="sabre_laser">
-        <img src="./image/sabre_laser/sabre_laser_vert-Photoroom.png" alt="Sabre laser vert stylé" class="sabre_laser">
-        <img src="./image/sabre_laser/sabre_laser_violet-Photoroom.png" alt="Sabre laser violet" class="sabre_laser">
+        <h1>Mes projets :</h1>
+
+        <div class="menu">
+            <input type="checkbox" id="projet1">
+            <label for="projet1">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_bleu-Photoroom.png" alt="Sabre laser bleu">
+                    <span>Création d’un système de classification de dépêches</span>
+                </section>
+            </label>
+            <div class="contenu">
+            <section>
+                <div><u>Description :</u> Classification de dépêches. Une dépêche = un numéro, une date, une catégorie et un texte</div>
+                <div><u>Etape 1 :</u><li>Création d'un lexique manuel des mots les plus fréquents dans chaque catégorie + pondération (1,2,3 : 1 = peu fréquent, 3 = très fréquent).</li> <li> Création d'un programme qui donne une catégorie aux dépêches grâce aux lexiques créés.</li> </div>
+                <div><u>Etape 2 :</u> Génération automatique du lexique par rapport à des catégories connues.</div>
+                <div><u>Etape 3 :</u> Génération automatique du lexique mais nous ne connaissons ni le nombre, ni le nom des dépêches.</div>
+                <div><u><li>Ce que nous avons fait :</u></li><li>Projet réalisé en binôme sur le même ordinateur.</li><li>Création de plusieurs fonctions pour répondre aux besoins : classement de dépêches, calcul de scores, génération automatique de lexiques, système de tri pour les lexiques.</li></div>
+                <div><li><u>Compétences travaillées :</u></li><li><li>Réaliser un développement d’application</li><li>Optimiser des applications informatiques</li></li></div>
+                <div><li><u>Technique utilisée :</u></li><li>Langage Java.</li></div>
+            </section>
+                <div><button class="fermer"><label for="projet1">Fermer</label></button></div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <input type="checkbox" id="projet2">
+            <label for="projet2">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_orange-Photoroom.png" alt="Sabre laser orange">
+                    <span>Installation d’un poste pour le développement</span>
+                </section>
+            </label>
+            <div class="contenu">
+                <section>
+                <div><u>Description :</u> Installation d'une machine virtuelle sur une station Linux + réalisation d'un schéma expliquant les étapes d’installation de la machine</div>
+                <div><u>Ce que j’ai fait :</u><li>Projet individuel, j’ai installé une machine virtuelle sur mon post Linux en suivant les instructions données.</li><li>J’ai fait le schéma expliquant les étapes clés pour installer cette machine.</li></div>
+                <div><u>Compétence travaillée :</u> Administrer des systèmes informatiques communicants complexes</div>
+                <div><u>Techniques utilisées :</u> Commandes Linux dans un terminal</div>
+                </section>
+              <div><button class="fermer"><label for="projet2">Fermer</label></button></div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <input type="checkbox" id="projet3">
+            <label for="projet3">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_vert2-Photoroom.png" alt="Sabre laser vert">
+                    <span>Création d’une base de données</span>
+                </section>
+            </label>
+            <div class="contenu">
+                <section>
+                <div><u>Description :</u> Création d'une base de données pour la gestion des réservations d'un club de bowling</div>
+                <div><u>Etape 1 :</u>Schéma relationnel + Script de création de la base de données + Test du script</div>
+                <div><u>Etape 2 :</u>Peuplement et interrogation de la BD</div>
+                <div><u>Etape 3 :</u>Prise en compte de nouveaux besoins</div>
+                <div><u>Ce que nous avons fait :</u>Réalisation du schéma de la base en binôme + compte rendu</div>
+                <div><u>Ce que j’ai fait :</u>Divisions du travail en 2 : moitié des requêtes chacun + aide du partenaire en cas de bloquage</div>
+                <div><u>Compétence travaillée :</u>Gérer des données de l’information</div>
+                <div><u>Techniques utilisées :</u><li>Langage SQL</li><li>SLR = schéma de la base de données</li></div>
+                </section>
+              <div><button class="fermer"><label for="projet3">Fermer</label></button></div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <input type="checkbox" id="projet4">
+            <label for="projet4">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_noir-Photoroom.png" alt="Sabre laser noir">
+                    <span>Recueil de besoins</span>
+                </section>
+            </label>
+            <div class="contenu">
+              <section>
+                <div><u>Description :</u>Simplification d'informations d’un site internet et les mettre dans un recueil d’informations</div>
+                <div><u>Ce que nous avons fait :</u><li>Création d'un document Word commun avec toutes les informations demandées : contexte de l’entreprise et transition écologique et économique.</li><li>Répartition du travail dans un groupe de 4 : 2 sous-parties chacun sur le contexte de l'entreprise.</li><li>Recherche d'informations sur la transition écologique et économique par les membres les plus avancés.</li><li>Les élèves les plus à l’aise avec Word ont rassemblé toutes les données et ont fait la mise en forme finale du recueil.</li></div>
+                <div><u>Ce que j'ai fait :</u><li>Parties « stratégie » et « valeurs » de l'entreprise.</li><li>J’ai fortement contribué à la mise en forme finale du document.</li></div>
+                <div><u>Compétence travaillée :</u>Conduire un projet</div>
+                <div><u>Technique utilisée :</u>Application de traitement de texte Word</div>
+              </section>
+              <div><button class="fermer"><label for="projet4">Fermer</label></button></div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <input type="checkbox" id="projet5">
+            <label for="projet5">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_rouge-Photoroom.png" alt="Sabre laser rouge">
+                    <span>Découverte de l’environnement économique et écologique</span>
+                </section>
+            </label>
+            <div class="contenu">
+              <section>
+                <div><u>Description :</u><li>Continuité du projet « Recueil de besoin » :</li>Création d'une maquette du site, puis développement du site avec les informations du recueil.</div>
+                <div><u>Ce que nous avons fait :</u><li>Répartition des pages à créer dans la maquette.</li><li>Développement de la ou les page(s) que nous avons réalisé dans la maquette.</li><li>Création d'un style commun.</li><li>Le membre le plus avancé s’est occupé de mettre toutes les pages en commun</li></div>
+                <div><u>Ce que j'ai fait :</u>J'ai créé la page « nos concurrents et nos clients » dans la maquette, puis l'ai développé dans le site final.</div>
+                <div><u>Compétence travaillée :</u>Travailler dans une équipe informatique</div>
+                <div><u>Technique utilisée :</u><li>Site Whimsical pour créer la maquette</li><li>Langages HTML et CSS pour coder le site</li></div>
+              </section>
+              <div><button class="fermer"><label for="projet5">Fermer</label></button></div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <input type="checkbox" id="projet6">
+            <label for="projet6">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_vert-Photoroom.png" alt="Sabre laser vert plus stylé">
+                    <span>...</span>
+                </section>
+            </label>
+            <div class="contenu">
+              ...
+              <div><button class="fermer"><label for="projet6">Fermer</label></button></div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <input type="checkbox" id="projet7">
+            <label for="projet7">
+                <section>
+                    <img class="sabre_laser" src="./image/sabre_laser/sabre_laser_violet-Photoroom.png" alt="Sabre laser violet">
+                    <span>...</span>
+                </section>
+            </label>
+            <div class="contenu">
+              ...
+              <div><button class="fermer"><label for="projet7">Fermer</label></button></div>
+            </div>
+        </div>
+        
     </aside>
 </body>
 <footer>
-    <p>footer</p>
-    <!-- Mettre les contacts -->
+    
 </footer>
 </html>
