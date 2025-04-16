@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./image/logo.png">
+    <title>Portfolio Battista Nicolas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="biographie.css">
+</head>
+<body>
+    <video autoplay muted loop class="fond_etoile">
+        <source src="./image/fond_etoile.mp4" type="video/mp4">
+        Ton navigateur ne supporte pas la vidéo.
+    </video>
+    <nav>
+        <section>
+            <a href="./index.html"><img src="./image/logo.png" alt="Logo star wars" class="logo"></a>
+            <b>Battista Nicolas</b>
+        </section>
+
+        <!-- Fait par ChatGPT -->
+        <section>
+            <button onclick="togglePlay()" class="music" id="musicBtn">Musique ▶</button>
+
+            <audio id="audio" src="./music/generique.mp3" loop></audio>
+            
+            <script>
+                function togglePlay() {
+                    const audio = document.getElementById('audio');
+                    const btn = document.getElementById('musicBtn');
+                
+                    if (audio.paused) {
+                        audio.play();
+                        btn.textContent = 'Pause ⏸';
+                    } 
+                    else {
+                        audio.pause();
+                        btn.textContent = 'Musique ▶';
+                    }
+                }
+            </script>
+        </section>
+
+        <section class="navbar">
+            <a href="./index.html">Accueil</a>
+            <a href="#" class="page_actu">Biographie</a>
+            <a href="./projets.html">Projets</a>
+            <a href="#">Compétences</a>
+        </section>
+    </nav>
+
+    <!-- Fait par ChatGPT-->
+    <div class="controls">
+        <button onclick="startAnimation()" class="start-animation">Animation</button>
+        <audio id="audio" src="./music/generique.mp3" loop></audio>
+    </div>
+    
+    <div class="star-wars">
+        <div class="crawl" id="crawl">
+            <div class="content">
+            <h1>Qui suis-je ?</h1>
+            <p>
+                C'est une période de guerre civile. Des vaisseaux rebelles, attaquant depuis une base secrète,
+                ont remporté leur première victoire contre le maléfique Empire Galactique.
+            </p>
+            <p>
+                Au cours de la bataille, des espions rebelles ont réussi à s'emparer des plans secrets
+                de l'arme absolue de l'Empire, L'ÉTOILE DE LA MORT, une station spatiale blindée
+                dotée d'un armement assez puissant pour annihiler une planète entière.
+            </p>
+            <p>
+                Poursuivie par les sinistres agents de l'Empire, la princesse Leia regagne sa planète
+                à bord de son vaisseau spatial, porteuse des plans volés qui pourront sauver son peuple
+                et restaurer la liberté dans la galaxie…
+            </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePlay() {
+            const audio = document.getElementById('audio');
+            const btn = document.getElementById('musicBtn');
+            
+            if (audio.paused) {
+            audio.play();
+            btn.textContent = 'Pause ⏸';
+            } else {
+            audio.pause();
+            btn.textContent = 'Musique ▶';
+            }
+        }
+
+        function startAnimation() {
+            const crawl = document.getElementById('crawl');
+            const audio = document.getElementById('audio');
+            const btn = document.getElementById('musicBtn');
+
+            crawl.classList.remove('animate'); // Reset si déjà lancé
+            void crawl.offsetWidth; // Reflow trick pour redémarrer l'animation
+            crawl.classList.add('animate');
+
+            if (audio.paused) {
+            audio.play();
+            btn.textContent = 'Pause ⏸';
+            }
+        }
+    </script>
+</body>
+</html>

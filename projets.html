@@ -44,8 +44,7 @@
 
         <section class="navbar">
             <a href="./index.html">Accueil</a>
-            <a href="#">Biographie</a>
-            <!-- Page Biographie : Faire le style "intro" épisode Star Wars : "Dans une galaxie lointaine..." -->
+            <a href="./biographie.html">Biographie</a>
             <a href="#" class="page_actu">Projets</a>
             <a href="#">Compétences</a>
         </section>
@@ -186,12 +185,29 @@
         </div>
         
     </aside>
+
+    <!-- Fait par Chat GPT-->
+    <!-- Effet sonore quand on clique sur les menus -->
+    <audio id="soundOpen" src="./music/allumage.mp3"></audio>
+        <audio id="soundClose" src="./music/eteignage.mp3"></audio>
+        
+        <script>
+            const inputs = document.querySelectorAll('input[type="checkbox"]');
+            const soundOpen = document.getElementById('soundOpen');
+            const soundClose = document.getElementById('soundClose');
+        
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    if (input.checked) {
+                        soundOpen.currentTime = 0;
+                        soundOpen.play();
+                    } else {
+                        soundClose.currentTime = 0;
+                        soundClose.play();
+                    }
+                });
+            });
+        </script>
+
 </body>
-<footer>
-    <section>
-        <div>Mes contacts :</div>
-        <a href="https://discord.com/"><img src="./image/discord.webp" alt="discord" class="contacts"></a>
-        <a href="https://fr.linkedin.com/"><img src="./image/linkedin.webp" alt="linkedIn" class="contacts"></a>
-    </section>
-</footer>
 </html>

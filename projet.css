@@ -12,7 +12,6 @@ h1{
 .menu {
     width: 90%;
     position: relative;
-    margin-bottom: 80px;
 }
 input {
     display: none;
@@ -32,11 +31,17 @@ span{
     font-size: 25px;
 }
 .contenu {
-    display: none;
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.7s ease-in-out;
     text-align: center;
     margin: 2%;
     margin-top: 5%;
     font-size: 110%;
+}
+input:checked + label + .contenu {
+    max-height: 10000px;
 }
 .contenu section {
     display: flex;
