@@ -12,6 +12,7 @@ h1{
 .menu {
     width: 90%;
     position: relative;
+    margin-bottom: 2%;
 }
 input {
     display: none;
