@@ -21,9 +21,13 @@ main {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    align-items: center;
 }
-main div {
-    border: 1px double yellow;
-    padding: 2%;
+main a {
+    padding: 1%;
     margin: 2%;
+}
+img {
+    width: 90px;
+    height: 80px;
 }
