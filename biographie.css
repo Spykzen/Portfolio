@@ -15,14 +15,24 @@
     margin-top: 7%;
     perspective: 800px;
     overflow: hidden;
-    top: 25%
 }
 
+.star-wars::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 15%;
+    width: 100%;
+    background: linear-gradient(to top, transparent, black);
+    pointer-events: none;
+  }
 .crawl {
     display: flex;
     justify-content: center;
     align-items: center;
     transform-style: preserve-3d;
+    transform: rotateX(7deg);
+    transform-origin: bottom center;
 }
 
 .content {
@@ -33,15 +43,15 @@
 
 /* Animation appliquée au lancement */
 .animate .content {
-    animation: crawl 140s linear infinite;
+    animation: crawl 70s linear infinite;
 }
 
 @keyframes crawl {
     0% {
-      transform: rotateX(25deg) translateY(65vh);
+      transform: rotateX(25deg) translateY(63vh) scale(1);
     }
     100% {
-      transform: rotateX(25deg) translateY(-300vh);
+      transform: rotateX(25deg) translateY(-75vh) scale(0.5);
     }
 }
 
