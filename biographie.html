@@ -46,66 +46,71 @@
             <a href="./index.html">Accueil</a>
             <a href="#" class="page_actu">Biographie</a>
             <a href="./projets.html">Projets</a>
-            <a href="#">Compétences</a>
+            <a href="./competences.html">Compétences</a>
         </section>
     </nav>
 
     <!-- Fait par ChatGPT-->
     <div class="controls">
-        <button onclick="startAnimation()" class="start-animation">Animation</button>
+        <button onclick="toggleAnimation()" class="start-animation" id="animationBtn">Lancer l'animation</button>
         <audio id="audio" src="./music/generique.mp3" loop></audio>
-    </div>
+      </div>
     
-    <div class="star-wars">
+      <div class="star-wars">
         <div class="crawl" id="crawl">
-            <div class="content">
+          <div class="content" id="content">
             <h1>Qui suis-je ?</h1>
             <p>
-                C'est une période de guerre civile. Des vaisseaux rebelles, attaquant depuis une base secrète,
-                ont remporté leur première victoire contre le maléfique Empire Galactique.
+              C'est une période de guerre civile. Des vaisseaux rebelles, attaquant depuis une base secrète,
+              ont remporté leur première victoire contre le maléfique Empire Galactique.
             </p>
             <p>
-                Au cours de la bataille, des espions rebelles ont réussi à s'emparer des plans secrets
-                de l'arme absolue de l'Empire, L'ÉTOILE DE LA MORT, une station spatiale blindée
-                dotée d'un armement assez puissant pour annihiler une planète entière.
+              Au cours de la bataille, des espions rebelles ont réussi à s'emparer des plans secrets
+              de l'arme absolue de l'Empire, L'ÉTOILE DE LA MORT, une station spatiale blindée
+              dotée d'un armement assez puissant pour annihiler une planète entière.
             </p>
             <p>
-                Poursuivie par les sinistres agents de l'Empire, la princesse Leia regagne sa planète
-                à bord de son vaisseau spatial, porteuse des plans volés qui pourront sauver son peuple
-                et restaurer la liberté dans la galaxie…
+              Poursuivie par les sinistres agents de l'Empire, la princesse Leia regagne sa planète
+              à bord de son vaisseau spatial, porteuse des plans volés qui pourront sauver son peuple
+              et restaurer la liberté dans la galaxie…
             </p>
-            </div>
+          </div>
         </div>
-    </div>
+      </div>
     
-    <script>
-        function togglePlay() {
-            const audio = document.getElementById('audio');
-            const btn = document.getElementById('musicBtn');
-            
-            if (audio.paused) {
-            audio.play();
-            btn.textContent = 'Pause ⏸';
-            } else {
-            audio.pause();
-            btn.textContent = 'Musique ▶';
-            }
-        }
+      <script>
+        let isAnimating = false;
 
-        function startAnimation() {
-            const crawl = document.getElementById('crawl');
-            const audio = document.getElementById('audio');
-            const btn = document.getElementById('musicBtn');
+        function toggleAnimation() {
+        const crawl = document.getElementById('crawl');
+        const content = document.getElementById('content');
+        const audio = document.getElementById('audio');
+        const animBtn = document.getElementById('animationBtn');
+        const musicBtn = document.getElementById('musicBtn');
 
-            crawl.classList.remove('animate'); // Reset si déjà lancé
-            void crawl.offsetWidth; // Reflow trick pour redémarrer l'animation
+        if (!isAnimating) {
+            // Démarrer l'animation
             crawl.classList.add('animate');
+            isAnimating = true;
+            animBtn.textContent = 'Arrêter l\'animation';
 
+            // Lancer la musique si elle n’est pas en cours
             if (audio.paused) {
             audio.play();
-            btn.textContent = 'Pause ⏸';
+            musicBtn.textContent = 'Pause ⏸';
             }
+        } else {
+            // Arrêter l'animation
+            crawl.classList.remove('animate');
+            isAnimating = false;
+            animBtn.textContent = 'Lancer l\'animation';
+
+            // Remettre le texte en position normale (au centre)
+            content.style.animation = 'none'; // retire toute anim temporairement
+            void content.offsetWidth;         // force reflow
+            content.style.animation = null;   // permet de relancer plus tard
         }
-    </script>
+        }
+      </script>
 </body>
 </html>

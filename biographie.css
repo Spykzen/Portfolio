@@ -1,58 +1,51 @@
 .controls {
-    top: 20px;
-    left: 20px;
-    z-index: 10;
+    position: absolute;
+    left: 1%;
 }
 
 .start-animation {
     background: none;
     border: 1px solid yellow;
-    border-radius: 10%;
-    font-size: 150%;
-    padding: 1%;
-    margin-left: 1%;
+    font-size: 110%;
+    padding: 10px 20px;
     cursor: pointer;
-    margin-bottom: 10px;
 }
 
 .star-wars {
-    height: 100vh;
-    perspective: 400px;
+    margin-top: 7%;
+    perspective: 800px;
+    overflow: hidden;
+    top: 25%
 }
 
 .crawl {
-    position: absolute;
-    bottom: -100vh;
-    width: 100%;
-    height: auto;
-    transform-origin: 50% 100%;
-    transform: rotateX(20deg);
-    transition: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-style: preserve-3d;
 }
 
-.crawl.animate {
-    animation: crawl 60s linear forwards;
-}
-
-.crawl > .content {
-    width: 60%;
-    margin: 0 auto;
+.content {
+    width: 70%;
+    font-size: 130%;
     text-align: justify;
-    font-size: 200%;
+}
+
+/* Animation appliquée au lancement */
+.animate .content {
+    animation: crawl 140s linear infinite;
 }
 
 @keyframes crawl {
     0% {
-        bottom: -100vh;
-        transform: rotateX(20deg) translateZ(0);
+      transform: rotateX(25deg) translateY(65vh);
     }
     100% {
-        bottom: 100vh;
-        transform: rotateX(25deg) translateZ(-500px);
+      transform: rotateX(25deg) translateY(-300vh);
     }
 }
 
 h1 {
     text-align: center;
-    font-size: 3em;
+    font-size: 200%;
 }
