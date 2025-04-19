@@ -16,21 +16,23 @@
         Ton navigateur ne supporte pas la vidéo.
     </video>
     
-  <canvas id="game" width="700" height="700"></canvas>
+  <canvas id="game" width="700" height="704"></canvas>
+  <button id="restartBtn">Rejouer</button>
+  
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
     const xwingImg = new Image();
-    xwingImg.src = "./x-wing.png";
+    xwingImg.src = "./image/x-wing.png";
 
     /* Le joueur */
 
     let player = {
-      x: canvas.width / 2 - 25,
-      y: canvas.height - 100,
-      width: 50,
-      height: 50,
-      speed: 5
+        x: canvas.width / 2 - 25,
+        y: canvas.height - 80,
+        width: 50,
+        height: 50,
+        speed: 3
     };
 
     let keys = {};
@@ -88,16 +90,16 @@
     let enemies = [];
 
     const tie_fighterImg = new Image();
-    tie_fighterImg.src = "./TIE-fighter.png";
+    tie_fighterImg.src = "./image/TIE-fighter.png";
 
     function spawnEnemies() {
     for (let i = 0; i < 5; i++) {
         enemies.push({
-        x: i * 100 + 50,
-        y: 50,
+        x: Math.random() * (canvas.width - 40),
+        y: -40,
         width: 40,
         height: 40,
-        speed: 1
+        speed: 0.5
         });
     }
     }
@@ -128,31 +130,129 @@
             bullets.splice(bIndex, 1);
             enemies.splice(eIndex, 1);
             explosionSound.play();
+            score += 1
         }
         });
     });
     }
 
+    function checkPlayerCollision() {
+        if (isGameOver) return;
+
+        enemies.forEach((enemy, index) => {
+            if (
+            player.x < enemy.x + enemy.width &&
+            player.x + player.width > enemy.x &&
+            player.y < enemy.y + enemy.height &&
+            player.y + player.height > enemy.y
+            ) {
+            enemies.splice(index, 1);
+            lives--;
+
+            if (lives <= 0) {
+                gameOver();
+            }
+            }
+        });
+    }
+
+
     /* Effets sonores */
 
-    const laserSound = new Audio("./pew_pew.mp3");
-    const explosionSound = new Audio("./death.mp3");
+    const laserSound = new Audio("./music/pew_pew.mp3");
+    const explosionSound = new Audio("./music/death.mp3");
+
+    /* Score */
+
+    let score = 0;
+
+    function drawScore() {
+        ctx.textAlign = "left";
+        ctx.fillStyle = "yellow";
+        ctx.font = "24px Rebellion";
+        ctx.fillText("Score: " + score, 10, 30);
+    }
+
+    /* Vies */
+
+    let lives = 3;
+
+    function drawLives() {
+        ctx.textAlign = "left";
+        ctx.fillStyle = "yellow";
+        ctx.font = "24px Rebellion";
+        ctx.fillText("Vies: " + lives, canvas.width - 120, 30);
+    }
+
+    /* Game Over */
+
+    let isGameOver = false;
+
+    function gameOver() {
+        isGameOver = true;
+
+        ctx.fillStyle = "red";
+        ctx.font = "48px Rebellion";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+
+        const btn = document.getElementById("restartBtn");
+        btn.style.display = "block";
+        btn.style.top = canvas.offsetTop + canvas.height / 2 + 40 + "px"; // position sous le texte
+    }
 
     /* Le jeu */
 
-    function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    update();
-    drawPlayer();
-    updateBullets();
-    drawBullets();
-    updateEnemies();
-    drawEnemies();
-    checkCollisions();
-    requestAnimationFrame(gameLoop);
+    let lastSpawn = 0;
+    let spawnDelay = 5000; // 3 secondes
+
+    function gameLoop(timestamp) {
+        if (isGameOver) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (timestamp - lastSpawn > spawnDelay) {
+            spawnEnemies();
+            lastSpawn = timestamp;
+        }
+
+        update();
+        updateBullets();
+        updateEnemies();
+        checkCollisions();
+        checkPlayerCollision();
+
+        drawPlayer();
+        drawBullets();
+        drawEnemies();
+        drawScore();
+        drawLives();
+
+        animationId = requestAnimationFrame(gameLoop);
     }
 
-    gameLoop();
+    document.getElementById("restartBtn").addEventListener("click", () => {
+        // Reset score, vies, ennemis, etc.
+        score = 0;
+        lives = 3;
+        enemies = [];
+        bullets = [];
+        isGameOver = false;
+        lastSpawn = 0;
+
+        // Reset position du joueur 👇
+        player.x = canvas.width / 2 - player.width / 2;
+        player.y = canvas.height - 80;
+
+        // Masquer le bouton
+        document.getElementById("restartBtn").style.display = "none";
+
+        // Relancer la boucle
+        requestAnimationFrame(gameLoop);
+    });
+
+    // Premier appel avec timestamp
+    requestAnimationFrame(gameLoop);;
   </script>
 </body>
 </html>

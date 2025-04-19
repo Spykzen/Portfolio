@@ -1,5 +1,18 @@
 canvas {
     display: block;
     margin: 0 auto;
-    border: 2px solid white;
+    border: 2px solid yellow;
+}
+#restartBtn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 55%; /* juste sous le Game Over */
+    padding: 12px 24px;
+    font-size: 20px;
+    background-color: #111;
+    border: 2px solid yellow;
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
 }
