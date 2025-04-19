@@ -82,34 +82,34 @@
         let isAnimating = false;
 
         function toggleAnimation() {
-        const crawl = document.getElementById('crawl');
-        const content = document.getElementById('content');
-        const audio = document.getElementById('audio');
-        const animBtn = document.getElementById('animationBtn');
-        const musicBtn = document.getElementById('musicBtn');
+            const crawl = document.getElementById('crawl');
+            const content = document.getElementById('content');
+            const audio = document.getElementById('audio');
+            const animBtn = document.getElementById('animationBtn');
+            const musicBtn = document.getElementById('musicBtn');
 
-        if (!isAnimating) {
-            // Démarrer l'animation
-            crawl.classList.add('animate');
-            isAnimating = true;
-            animBtn.textContent = 'Arrêter l\'animation';
+            if (!isAnimating) {
+                // Démarrer l'animation
+                crawl.classList.add('animate');
+                isAnimating = true;
+                animBtn.textContent = 'Arrêter l\'animation';
 
-            // Lancer la musique si elle n’est pas en cours
-            if (audio.paused) {
-            audio.play();
-            musicBtn.textContent = 'Pause ⏸';
+                // Lancer la musique si elle n’est pas en cours
+                if (audio.paused) {
+                audio.play();
+                musicBtn.textContent = 'Pause ⏸';
+                }
+            } else {
+                // Arrêter l'animation
+                crawl.classList.remove('animate');
+                isAnimating = false;
+                animBtn.textContent = 'Lancer l\'animation';
+
+                // Remettre le texte en position normale (au centre)
+                content.style.animation = 'none'; // retire toute anim temporairement
+                void content.offsetWidth;         // force reflow
+                content.style.animation = null;   // permet de relancer plus tard
             }
-        } else {
-            // Arrêter l'animation
-            crawl.classList.remove('animate');
-            isAnimating = false;
-            animBtn.textContent = 'Lancer l\'animation';
-
-            // Remettre le texte en position normale (au centre)
-            content.style.animation = 'none'; // retire toute anim temporairement
-            void content.offsetWidth;         // force reflow
-            content.style.animation = null;   // permet de relancer plus tard
-        }
         }
       </script>
 </body>
