@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="./image/logo.png">
+    <title>Star Wars Galaga</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="jeu.css">
+</head>
+
+<body>
+    <!-- Fond de page animé -->
+    <video autoplay muted loop class="fond_etoile">
+        <source src="./image/fond_etoile.mp4" type="video/mp4">
+        Ton navigateur ne supporte pas la vidéo.
+    </video>
+    
+  <canvas id="game" width="700" height="700"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const xwingImg = new Image();
+    xwingImg.src = "./image/x-wing.png";
+
+    /* Le joueur */
+
+    let player = {
+      x: canvas.width / 2 - 25,
+      y: canvas.height - 100,
+      width: 50,
+      height: 50,
+      speed: 5
+    };
+
+    let keys = {};
+
+    document.addEventListener("keydown", (e) => keys[e.key] = true);
+    document.addEventListener("keyup", (e) => keys[e.key] = false);
+
+    function drawPlayer() {
+        ctx.drawImage(xwingImg, player.x, player.y, player.width, player.height);
+    }
+
+    function update() {
+      if (keys["ArrowLeft"] && player.x > 0) {
+        player.x -= player.speed;
+      }
+      if (keys["ArrowRight"] && player.x + player.width < canvas.width) {
+        player.x += player.speed;
+      }
+    }
+
+    /* Les tirs laser */
+
+    let bullets = [];
+
+    document.addEventListener("keydown", (e) => {
+    keys[e.key] = true;
+    if (e.key === " ") {
+        bullets.push({
+        x: player.x + player.width / 2 - 2.5,
+        y: player.y,
+        width: 5,
+        height: 10,
+        speed: 7
+        });
+        laserSound.currentTime = 0;
+        laserSound.play();
+    }
+    });
+
+    function updateBullets() {
+    bullets.forEach((b, i) => {
+        b.y -= b.speed;
+        if (b.y + b.height < 0) bullets.splice(i, 1);
+    });
+    }
+
+    function drawBullets() {
+    ctx.fillStyle = "red";
+    bullets.forEach((b) => {
+        ctx.fillRect(b.x, b.y, b.width, b.height);
+    });
+    }
+
+    /* Les ennemies */
+    let enemies = [];
+
+    const tie_fighterImg = new Image();
+    tie_fighterImg.src = "./image/TIE-fighter.png";
+
+    function spawnEnemies() {
+    for (let i = 0; i < 5; i++) {
+        enemies.push({
+        x: i * 100 + 50,
+        y: 50,
+        width: 40,
+        height: 40,
+        speed: 1
+        });
+    }
+    }
+
+    function updateEnemies() {
+    enemies.forEach(enemy => {
+        enemy.y += enemy.speed;
+    });
+    }
+
+    function drawEnemies() {
+    enemies.forEach(enemy => {
+        ctx.drawImage(tie_fighterImg, enemy.x, enemy.y, enemy.width, enemy.height);
+    });
+    }
+
+    /* Collisions */
+
+    function checkCollisions() {
+    bullets.forEach((bullet, bIndex) => {
+        enemies.forEach((enemy, eIndex) => {
+        if (
+            bullet.x < enemy.x + enemy.width &&
+            bullet.x + bullet.width > enemy.x &&
+            bullet.y < enemy.y + enemy.height &&
+            bullet.y + bullet.height > enemy.y
+        ) {
+            bullets.splice(bIndex, 1);
+            enemies.splice(eIndex, 1);
+            explosionSound.play();
+        }
+        });
+    });
+    }
+
+    /* Effets sonores */
+
+    const laserSound = new Audio("./music/pew_pew.mp3");
+    const explosionSound = new Audio("./music/death.mp3");
+
+    /* Le jeu */
+
+    function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    update();
+    drawPlayer();
+    updateBullets();
+    drawBullets();
+    updateEnemies();
+    drawEnemies();
+    checkCollisions();
+    requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
