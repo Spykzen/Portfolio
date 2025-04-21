@@ -16,10 +16,29 @@
         Ton navigateur ne supporte pas la vidéo.
     </video>
     
-  <canvas id="game" width="700" height="704"></canvas>
+    <div id="gameWrapper">
+        <button id="homeBtn">Accueil</button>
+        <div>
+            <canvas id="game" width="700" height="704"></canvas>
+        </div>
+    </div>
   <button id="restartBtn">Rejouer</button>
   
   <script>
+    let boss = null; // Un seul boss à la fois
+    let lastBossTime = 0;
+    let bossInterval = 45000; // 45 secondes
+
+    let enemyBullets = [];
+    
+    let bonusLives = [];
+    const bonusLifeImg = new Image();
+    bonusLifeImg.src = "./image/life.png";
+
+    document.getElementById("homeBtn").addEventListener("click", () => {
+        window.location.href = "./index.html";
+    });
+
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
     const xwingImg = new Image();
@@ -32,7 +51,7 @@
         y: canvas.height - 80,
         width: 50,
         height: 50,
-        speed: 3
+        speed: 4
     };
 
     let keys = {};
@@ -45,31 +64,54 @@
     }
 
     function update() {
-      if (keys["ArrowLeft"] && player.x > 0) {
+      if (keys["q"] && player.x > 0) {
         player.x -= player.speed;
       }
-      if (keys["ArrowRight"] && player.x + player.width < canvas.width) {
+      if (keys["d"] && player.x + player.width < canvas.width) {
         player.x += player.speed;
       }
+      if (keys["z"] && player.y > 0) {
+        player.y -= player.speed;
     }
+    if (keys["s"] && player.y + player.height < canvas.height) {
+        player.y += player.speed;
+    }
+    }
+
+    canvas.addEventListener("mousedown", (e) => {
+        if (e.button === 0 && !isShooting) { // 0 = clic gauche
+            shoot();
+            laserSound.currentTime = 0;
+            laserSound.play();
+            isShooting = true;
+        }
+    });
+
+    canvas.addEventListener("mouseup", (e) => {
+        if (e.button === 0) {
+            isShooting = false;
+        }
+    });
 
     /* Les tirs laser */
 
     let bullets = [];
 
+    let isShooting = false;
+
     document.addEventListener("keydown", (e) => {
-    keys[e.key] = true;
-    if (e.key === " ") {
-        bullets.push({
-        x: player.x + player.width / 2 - 2.5,
-        y: player.y,
-        width: 5,
-        height: 10,
-        speed: 7
-        });
-        laserSound.currentTime = 0;
-        laserSound.play();
-    }
+        if (e.code === "Space" && !isShooting) {
+            shoot();
+            laserSound.currentTime = 0;
+            laserSound.play();
+            isShooting = true;
+        }
+    });
+
+    document.addEventListener("keyup", (e) => {
+        if (e.code === "Space") {
+            isShooting = false;
+        }
     });
 
     function updateBullets() {
@@ -86,6 +128,32 @@
     });
     }
 
+    function shoot() {
+        const bulletSpeed = 7;
+
+        // Taille des tirs
+        let bulletWidth = 5;
+        let bulletHeight = 20;
+
+        // Calcul des positions selon score
+        if (score >= 100) {
+            bullets.push(
+            { x: player.x + 5, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
+            { x: player.x + player.width / 2 - bulletWidth / 2, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
+            { x: player.x + player.width - 5 - bulletWidth, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
+            );
+        } else if (score >= 50) {
+            bullets.push(
+            { x: player.x + 5, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
+            { x: player.x + player.width - 5 - bulletWidth, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
+            );
+        } else {
+            bullets.push(
+            { x: player.x + player.width / 2 - bulletWidth / 2, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
+            );
+        }
+    }
+
     /* Les ennemies */
     let enemies = [];
 
@@ -93,27 +161,46 @@
     tie_fighterImg.src = "./image/TIE-fighter.png";
 
     function spawnEnemies() {
-    for (let i = 0; i < 5; i++) {
-        enemies.push({
-        x: Math.random() * (canvas.width - 40),
-        y: -40,
-        width: 40,
-        height: 40,
-        speed: 0.5
-        });
-    }
+        const enemyCount = 5; // ou n’importe quel nombre
+        const maxSpeed = 2;   // tu peux ajuster ça plus tard
+
+        for (let i = 0; i < enemyCount; i++) {
+            const speed = 1 + Math.random() * (maxSpeed - 1); // entre 1 et maxSpeed
+
+            enemies.push({
+            x: Math.random() * (canvas.width - 40),
+            y: -40,
+            width: 40,
+            height: 40,
+            speed: speed
+            });
+        }
     }
 
     function updateEnemies() {
-    enemies.forEach(enemy => {
-        enemy.y += enemy.speed;
-    });
+        enemies.forEach(enemy => {
+            enemy.y += enemy.speed;
+        });
     }
 
     function drawEnemies() {
     enemies.forEach(enemy => {
         ctx.drawImage(tie_fighterImg, enemy.x, enemy.y, enemy.width, enemy.height);
     });
+    }
+
+    function updateEnemyBullets() {
+        enemyBullets.forEach((b, i) => {
+            b.y += b.speed;
+            if (b.y > canvas.height) enemyBullets.splice(i, 1);
+        });
+    }
+
+    function drawEnemyBullets() {
+        ctx.fillStyle = "green";
+        enemyBullets.forEach((b) => {
+            ctx.fillRect(b.x, b.y, b.width, b.height);
+        });
     }
 
     /* Collisions */
@@ -156,10 +243,41 @@
         });
     }
 
+    function checkBonusLifeCollision() {
+        bonusLives.forEach((life, index) => {
+            if (
+            player.x < life.x + life.width &&
+            player.x + player.width > life.x &&
+            player.y < life.y + life.height &&
+            player.y + player.height > life.y
+            ) {
+            bonusLives.splice(index, 1);
+            lives++;
+            }
+        });
+    }
+
+    function checkEnemyBulletHits() {
+        enemyBullets.forEach((b, i) => {
+            if (
+            b.x < player.x + player.width &&
+            b.x + b.width > player.x &&
+            b.y < player.y + player.height &&
+            b.y + b.height > player.y
+            ) {
+            enemyBullets.splice(i, 1);
+            lives--;
+
+            if (lives <= 0) {
+                gameOver();
+            }
+            }
+        });
+    }
 
     /* Effets sonores */
 
-    const laserSound = new Audio("./music/pew_pew.mp3");
+    const laserSound = new Audio("./music/blaster.mp3");
     const explosionSound = new Audio("./music/death.mp3");
 
     /* Score */
@@ -184,6 +302,35 @@
         ctx.fillText("Vies: " + lives, canvas.width - 120, 30);
     }
 
+    function spawnBonusLife() {
+        const speed = 0.5
+
+        bonusLives.push({
+            x: Math.random() * (canvas.width - 30),
+            y: -30,
+            width: 30,
+            height: 30,
+            speed: speed
+        });
+    }
+
+    function updateBonusLives() {
+        bonusLives.forEach((life, index) => {
+            life.y += life.speed;
+
+            // Supprimer si hors écran
+            if (life.y > canvas.height) {
+            bonusLives.splice(index, 1);
+            }
+        });
+    }
+
+    function drawBonusLives() {
+        bonusLives.forEach(life => {
+            ctx.drawImage(bonusLifeImg, life.x, life.y, life.width, life.height);
+        });
+    }
+
     /* Game Over */
 
     let isGameOver = false;
@@ -196,17 +343,211 @@
         ctx.textAlign = "center";
         ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
 
-        const btn = document.getElementById("restartBtn");
-        btn.style.display = "block";
-        btn.style.top = canvas.offsetTop + canvas.height / 2 + 40 + "px"; // position sous le texte
+        const restartBtn = document.getElementById("restartBtn");
+        const homeBtn = document.getElementById("homeBtn");
+
+        restartBtn.style.display = "block";
+        homeBtn.style.display = "block";
+
+        restartBtn.style.top = canvas.offsetTop + canvas.height / 2 + 40 + "px";
+        homeBtn.style.top = canvas.offsetTop + canvas.height / 2 + 90 + "px";
+    }
+
+    /* Boss */
+
+    function spawnBoss() {
+        const level = Math.floor(Math.random() * 3) + 1; // Niveau entre 1 et 3
+
+        const bossImg = new Image();
+        bossImg.src = `./image/boss${level}.png`;
+
+        bossImg.onload = () => {
+            boss = {
+                x: canvas.width / 2 - 100,
+                y: 50,
+                width: 200,
+                height: 120,
+                level: level,
+                life: level * 20,
+                maxLife: level * 20,
+                speed: 0.5,
+                bullets: [],
+                img: bossImg,
+                shootCooldown: 0
+            };
+        };
+    }
+
+    function drawBoss() {
+        if (boss) {
+            ctx.drawImage(boss.img, boss.x, boss.y, boss.width, boss.height);
+
+            // Barre de vie
+            const barWidth = 200;
+            const barHeight = 15;
+            const barX = canvas.width / 2 - barWidth / 2;
+            const barY = 10;
+
+            ctx.fillStyle = "black";
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+
+            ctx.fillStyle = "red";
+            ctx.fillRect(barX, barY, (boss.life / boss.maxLife) * barWidth, barHeight);
+
+            ctx.strokeStyle = "white";
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+        }
+    }
+
+    function updateBoss() {
+        if (!boss) return;
+
+        // Mouvement gauche-droite automatique
+        boss.x += boss.speed;
+        if (boss.x <= 0 || boss.x + boss.width >= canvas.width) {
+            boss.speed *= -1;
+        }
+
+        // Attaque selon niveau
+        boss.shootCooldown--;
+        if (boss.shootCooldown <= 0) {
+            shootBoss();
+            boss.shootCooldown = 60 - boss.level * 10; // Niveau 3 = tire plus souvent
+        }
+
+        // Update bullets
+        if (!boss || !boss.bullets) return;
+
+        boss.bullets.forEach((b, i) => {
+        b.y += b.speed;
+        if (b.dx) b.x += b.dx * 2;
+        if (b.y > canvas.height) boss.bullets.splice(i, 1);
+        });
+    }
+
+    function shootBoss() {
+        if (!boss) return;
+
+        const bulletSpeed = 2 + boss.level;
+
+        if (boss.level === 1) {
+            // Simple tir central
+            boss.bullets.push({
+            x: boss.x + boss.width / 2 - 5,
+            y: boss.y + boss.height,
+            width: 10,
+            height: 20,
+            speed: bulletSpeed
+            });
+        }
+
+        if (boss.level === 2) {
+            // Double tir
+            boss.bullets.push(
+            {
+                x: boss.x + 40,
+                y: boss.y + boss.height,
+                width: 10,
+                height: 20,
+                speed: bulletSpeed
+            },
+            {
+                x: boss.x + boss.width - 50,
+                y: boss.y + boss.height,
+                width: 10,
+                height: 20,
+                speed: bulletSpeed
+            }
+            );
+        }
+
+        if (boss.level === 3) {
+            // Triple tir en éventail
+            boss.bullets.push(
+            { x: boss.x + 40, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: -1 },
+            { x: boss.x + boss.width / 2 - 4, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: 0 },
+            { x: boss.x + boss.width - 50, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: 1 }
+            );
+        }
+    }
+
+    function checkBossBullets() {
+        if (!boss || !boss.bullets) return;
+
+        boss.bullets.forEach((b, i) => {
+            if (
+                b.x < player.x + player.width &&
+                b.x + b.width > player.x &&
+                b.y < player.y + player.height &&
+                b.y + b.height > player.y
+            ) {
+                boss.bullets.splice(i, 1);
+                lives--;
+
+                if (lives <= 0) {
+                    gameOver();
+                }
+            }
+        });
+
+        bullets.forEach((bullet, bIndex) => {
+            if (
+                bullet.y < boss.y + boss.height &&
+                bullet.y + bullet.height > boss.y &&
+                bullet.x < boss.x + boss.width &&
+                bullet.x + bullet.width > boss.x
+            ) {
+                bullets.splice(bIndex, 1);
+                boss.life--;
+
+                if (boss.life <= 0) {
+                    boss = null;
+                    score += 50;
+                }
+            }
+        });
+    }
+
+    function drawBossBullets() {
+    if (!boss || !boss.bullets) return;
+
+        ctx.fillStyle = "blue";
+        boss.bullets.forEach((b) => {
+            ctx.fillRect(b.x, b.y, b.width, b.height);
+        });
     }
 
     /* Le jeu */
 
     let lastSpawn = 0;
     let spawnDelay = 5000; // 3 secondes
+    let lastBonusSpawn = 0;
+    let bonusInterval = 20000 + Math.random() * 30000; // entre 20 et 50 secondes
+    let lastEnemyShot = 0;
+    let enemyShotInterval = 500 + Math.random() * 1500; // toutes les 0.5 à 2 sec
 
     function gameLoop(timestamp) {
+        if (!boss && timestamp - lastBossTime > bossInterval) {
+            spawnBoss();
+            lastBossTime = timestamp;
+        }
+
+        if (timestamp - lastEnemyShot > enemyShotInterval && enemies.length > 0) {
+        // Choisir un ennemi au hasard
+        const shooter = enemies[Math.floor(Math.random() * enemies.length)];
+
+        enemyBullets.push({
+            x: shooter.x + shooter.width / 2 - 3,
+            y: shooter.y + shooter.height,
+            width: 6,
+            height: 12,
+            speed: 4
+        });
+
+        lastEnemyShot = timestamp;
+        enemyShotInterval = 500 + Math.random() * 1500; // recalculer pour la prochaine fois
+        }
+
         if (isGameOver) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -215,6 +556,25 @@
             spawnEnemies();
             lastSpawn = timestamp;
         }
+
+        if (timestamp - lastBonusSpawn > bonusInterval) {
+            spawnBonusLife();
+            lastBonusSpawn = timestamp;
+            bonusInterval = 10000 + Math.random() * 10000;
+        }
+
+        updateBoss();
+        drawBoss();
+        drawBossBullets();
+        checkBossBullets();
+
+        updateEnemyBullets();
+        drawEnemyBullets();
+        checkEnemyBulletHits();
+
+        updateBonusLives();
+        drawBonusLives();
+        checkBonusLifeCollision();
 
         update();
         updateBullets();
@@ -240,12 +600,13 @@
         isGameOver = false;
         lastSpawn = 0;
 
-        // Reset position du joueur 👇
+        // Reset position du joueur
         player.x = canvas.width / 2 - player.width / 2;
         player.y = canvas.height - 80;
 
         // Masquer le bouton
         document.getElementById("restartBtn").style.display = "none";
+        document.getElementById("homeBtn").style.display = "none";
 
         // Relancer la boucle
         requestAnimationFrame(gameLoop);
