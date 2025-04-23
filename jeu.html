@@ -15,605 +15,715 @@
         <source src="./image/fond_etoile.mp4" type="video/mp4">
         Ton navigateur ne supporte pas la vidéo.
     </video>
-    
+
     <div id="gameWrapper">
         <button id="homeBtn">Accueil</button>
         <div>
             <canvas id="game" width="700" height="704"></canvas>
         </div>
     </div>
-  <button id="restartBtn">Rejouer</button>
-  
-  <script>
-    let boss = null; // Un seul boss à la fois
-    let lastBossTime = 0;
-    let bossInterval = 45000; // 45 secondes
-
-    let enemyBullets = [];
-    
-    let bonusLives = [];
-    const bonusLifeImg = new Image();
-    bonusLifeImg.src = "./image/life.png";
-
-    document.getElementById("homeBtn").addEventListener("click", () => {
-        window.location.href = "./index.html";
-    });
-
-    const canvas = document.getElementById("game");
-    const ctx = canvas.getContext("2d");
-    const xwingImg = new Image();
-    xwingImg.src = "./image/x-wing.png";
-
-    /* Le joueur */
-
-    let player = {
-        x: canvas.width / 2 - 25,
-        y: canvas.height - 80,
-        width: 50,
-        height: 50,
-        speed: 4
-    };
-
-    let keys = {};
-
-    document.addEventListener("keydown", (e) => keys[e.key] = true);
-    document.addEventListener("keyup", (e) => keys[e.key] = false);
-
-    function drawPlayer() {
-        ctx.drawImage(xwingImg, player.x, player.y, player.width, player.height);
-    }
-
-    function update() {
-      if (keys["q"] && player.x > 0) {
-        player.x -= player.speed;
-      }
-      if (keys["d"] && player.x + player.width < canvas.width) {
-        player.x += player.speed;
-      }
-      if (keys["z"] && player.y > 0) {
-        player.y -= player.speed;
-    }
-    if (keys["s"] && player.y + player.height < canvas.height) {
-        player.y += player.speed;
-    }
-    }
-
-    canvas.addEventListener("mousedown", (e) => {
-        if (e.button === 0 && !isShooting) { // 0 = clic gauche
-            shoot();
-            laserSound.currentTime = 0;
-            laserSound.play();
-            isShooting = true;
-        }
-    });
-
-    canvas.addEventListener("mouseup", (e) => {
-        if (e.button === 0) {
-            isShooting = false;
-        }
-    });
-
-    /* Les tirs laser */
-
-    let bullets = [];
-
-    let isShooting = false;
-
-    document.addEventListener("keydown", (e) => {
-        if (e.code === "Space" && !isShooting) {
-            shoot();
-            laserSound.currentTime = 0;
-            laserSound.play();
-            isShooting = true;
-        }
-    });
-
-    document.addEventListener("keyup", (e) => {
-        if (e.code === "Space") {
-            isShooting = false;
-        }
-    });
-
-    function updateBullets() {
-    bullets.forEach((b, i) => {
-        b.y -= b.speed;
-        if (b.y + b.height < 0) bullets.splice(i, 1);
-    });
-    }
-
-    function drawBullets() {
-    ctx.fillStyle = "red";
-    bullets.forEach((b) => {
-        ctx.fillRect(b.x, b.y, b.width, b.height);
-    });
-    }
-
-    function shoot() {
-        const bulletSpeed = 7;
-
-        // Taille des tirs
-        let bulletWidth = 5;
-        let bulletHeight = 20;
-
-        // Calcul des positions selon score
-        if (score >= 100) {
-            bullets.push(
-            { x: player.x + 5, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
-            { x: player.x + player.width / 2 - bulletWidth / 2, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
-            { x: player.x + player.width - 5 - bulletWidth, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
-            );
-        } else if (score >= 50) {
-            bullets.push(
-            { x: player.x + 5, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
-            { x: player.x + player.width - 5 - bulletWidth, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
-            );
-        } else {
-            bullets.push(
-            { x: player.x + player.width / 2 - bulletWidth / 2, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
-            );
-        }
-    }
-
-    /* Les ennemies */
-    let enemies = [];
-
-    const tie_fighterImg = new Image();
-    tie_fighterImg.src = "./image/TIE-fighter.png";
-
-    function spawnEnemies() {
-        const enemyCount = 5; // ou n’importe quel nombre
-        const maxSpeed = 2;   // tu peux ajuster ça plus tard
-
-        for (let i = 0; i < enemyCount; i++) {
-            const speed = 1 + Math.random() * (maxSpeed - 1); // entre 1 et maxSpeed
-
-            enemies.push({
-            x: Math.random() * (canvas.width - 40),
-            y: -40,
-            width: 40,
-            height: 40,
-            speed: speed
-            });
-        }
-    }
-
-    function updateEnemies() {
-        enemies.forEach(enemy => {
-            enemy.y += enemy.speed;
-        });
-    }
-
-    function drawEnemies() {
-    enemies.forEach(enemy => {
-        ctx.drawImage(tie_fighterImg, enemy.x, enemy.y, enemy.width, enemy.height);
-    });
-    }
-
-    function updateEnemyBullets() {
-        enemyBullets.forEach((b, i) => {
-            b.y += b.speed;
-            if (b.y > canvas.height) enemyBullets.splice(i, 1);
-        });
-    }
-
-    function drawEnemyBullets() {
-        ctx.fillStyle = "green";
-        enemyBullets.forEach((b) => {
-            ctx.fillRect(b.x, b.y, b.width, b.height);
-        });
-    }
-
-    /* Collisions */
-
-    function checkCollisions() {
-    bullets.forEach((bullet, bIndex) => {
-        enemies.forEach((enemy, eIndex) => {
-        if (
-            bullet.x < enemy.x + enemy.width &&
-            bullet.x + bullet.width > enemy.x &&
-            bullet.y < enemy.y + enemy.height &&
-            bullet.y + bullet.height > enemy.y
-        ) {
-            bullets.splice(bIndex, 1);
-            enemies.splice(eIndex, 1);
-            explosionSound.play();
-            score += 1
-        }
-        });
-    });
-    }
-
-    function checkPlayerCollision() {
-        if (isGameOver) return;
-
-        enemies.forEach((enemy, index) => {
-            if (
-            player.x < enemy.x + enemy.width &&
-            player.x + player.width > enemy.x &&
-            player.y < enemy.y + enemy.height &&
-            player.y + player.height > enemy.y
-            ) {
-            enemies.splice(index, 1);
-            lives--;
-
-            if (lives <= 0) {
-                gameOver();
-            }
-            }
-        });
-    }
-
-    function checkBonusLifeCollision() {
-        bonusLives.forEach((life, index) => {
-            if (
-            player.x < life.x + life.width &&
-            player.x + player.width > life.x &&
-            player.y < life.y + life.height &&
-            player.y + player.height > life.y
-            ) {
-            bonusLives.splice(index, 1);
-            lives++;
-            }
-        });
-    }
-
-    function checkEnemyBulletHits() {
-        enemyBullets.forEach((b, i) => {
-            if (
-            b.x < player.x + player.width &&
-            b.x + b.width > player.x &&
-            b.y < player.y + player.height &&
-            b.y + b.height > player.y
-            ) {
-            enemyBullets.splice(i, 1);
-            lives--;
-
-            if (lives <= 0) {
-                gameOver();
-            }
-            }
-        });
-    }
-
-    /* Effets sonores */
-
-    const laserSound = new Audio("./music/blaster.mp3");
-    const explosionSound = new Audio("./music/death.mp3");
-
-    /* Score */
-
-    let score = 0;
-
-    function drawScore() {
-        ctx.textAlign = "left";
-        ctx.fillStyle = "yellow";
-        ctx.font = "24px Rebellion";
-        ctx.fillText("Score: " + score, 10, 30);
-    }
-
-    /* Vies */
-
-    let lives = 3;
-
-    function drawLives() {
-        ctx.textAlign = "left";
-        ctx.fillStyle = "yellow";
-        ctx.font = "24px Rebellion";
-        ctx.fillText("Vies: " + lives, canvas.width - 120, 30);
-    }
-
-    function spawnBonusLife() {
-        const speed = 0.5
-
-        bonusLives.push({
-            x: Math.random() * (canvas.width - 30),
-            y: -30,
-            width: 30,
-            height: 30,
-            speed: speed
-        });
-    }
-
-    function updateBonusLives() {
-        bonusLives.forEach((life, index) => {
-            life.y += life.speed;
-
-            // Supprimer si hors écran
-            if (life.y > canvas.height) {
-            bonusLives.splice(index, 1);
-            }
-        });
-    }
-
-    function drawBonusLives() {
-        bonusLives.forEach(life => {
-            ctx.drawImage(bonusLifeImg, life.x, life.y, life.width, life.height);
-        });
-    }
-
-    /* Game Over */
-
-    let isGameOver = false;
-
-    function gameOver() {
-        isGameOver = true;
-
-        ctx.fillStyle = "red";
-        ctx.font = "48px Rebellion";
-        ctx.textAlign = "center";
-        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-
-        const restartBtn = document.getElementById("restartBtn");
-        const homeBtn = document.getElementById("homeBtn");
-
-        restartBtn.style.display = "block";
-        homeBtn.style.display = "block";
-
-        restartBtn.style.top = canvas.offsetTop + canvas.height / 2 + 40 + "px";
-        homeBtn.style.top = canvas.offsetTop + canvas.height / 2 + 90 + "px";
-    }
-
-    /* Boss */
-
-    function spawnBoss() {
-        const level = Math.floor(Math.random() * 3) + 1; // Niveau entre 1 et 3
-
-        const bossImg = new Image();
-        bossImg.src = `./image/boss${level}.png`;
-
-        bossImg.onload = () => {
-            boss = {
-                x: canvas.width / 2 - 100,
-                y: 50,
-                width: 200,
-                height: 120,
-                level: level,
-                life: level * 20,
-                maxLife: level * 20,
-                speed: 0.5,
-                bullets: [],
-                img: bossImg,
-                shootCooldown: 0
-            };
-        };
-    }
-
-    function drawBoss() {
-        if (boss) {
-            ctx.drawImage(boss.img, boss.x, boss.y, boss.width, boss.height);
-
-            // Barre de vie
-            const barWidth = 200;
-            const barHeight = 15;
-            const barX = canvas.width / 2 - barWidth / 2;
-            const barY = 10;
-
-            ctx.fillStyle = "black";
-            ctx.fillRect(barX, barY, barWidth, barHeight);
-
-            ctx.fillStyle = "red";
-            ctx.fillRect(barX, barY, (boss.life / boss.maxLife) * barWidth, barHeight);
-
-            ctx.strokeStyle = "white";
-            ctx.strokeRect(barX, barY, barWidth, barHeight);
-        }
-    }
-
-    function updateBoss() {
-        if (!boss) return;
-
-        // Mouvement gauche-droite automatique
-        boss.x += boss.speed;
-        if (boss.x <= 0 || boss.x + boss.width >= canvas.width) {
-            boss.speed *= -1;
-        }
-
-        // Attaque selon niveau
-        boss.shootCooldown--;
-        if (boss.shootCooldown <= 0) {
-            shootBoss();
-            boss.shootCooldown = 60 - boss.level * 10; // Niveau 3 = tire plus souvent
-        }
-
-        // Update bullets
-        if (!boss || !boss.bullets) return;
-
-        boss.bullets.forEach((b, i) => {
-        b.y += b.speed;
-        if (b.dx) b.x += b.dx * 2;
-        if (b.y > canvas.height) boss.bullets.splice(i, 1);
-        });
-    }
-
-    function shootBoss() {
-        if (!boss) return;
-
-        const bulletSpeed = 2 + boss.level;
-
-        if (boss.level === 1) {
-            // Simple tir central
-            boss.bullets.push({
-            x: boss.x + boss.width / 2 - 5,
-            y: boss.y + boss.height,
-            width: 10,
-            height: 20,
-            speed: bulletSpeed
-            });
-        }
-
-        if (boss.level === 2) {
-            // Double tir
-            boss.bullets.push(
-            {
-                x: boss.x + 40,
-                y: boss.y + boss.height,
-                width: 10,
-                height: 20,
-                speed: bulletSpeed
-            },
-            {
-                x: boss.x + boss.width - 50,
-                y: boss.y + boss.height,
-                width: 10,
-                height: 20,
-                speed: bulletSpeed
-            }
-            );
-        }
-
-        if (boss.level === 3) {
-            // Triple tir en éventail
-            boss.bullets.push(
-            { x: boss.x + 40, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: -1 },
-            { x: boss.x + boss.width / 2 - 4, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: 0 },
-            { x: boss.x + boss.width - 50, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: 1 }
-            );
-        }
-    }
-
-    function checkBossBullets() {
-        if (!boss || !boss.bullets) return;
-
-        boss.bullets.forEach((b, i) => {
-            if (
-                b.x < player.x + player.width &&
-                b.x + b.width > player.x &&
-                b.y < player.y + player.height &&
-                b.y + b.height > player.y
-            ) {
-                boss.bullets.splice(i, 1);
-                lives--;
-
-                if (lives <= 0) {
-                    gameOver();
-                }
-            }
+    <button id="restartBtn">Rejouer</button>
+
+    <script>
+        const specialBonusImg = new Image();
+        specialBonusImg.src = "./image/laser.png";
+        let specialBullets = 2;
+        let isUsingSpecial = false;
+        let specialStartTime = 0;
+        const specialDuration = 3000; // 3 sec
+        let isFirstBoss = true;
+        let gameStartTime = performance.now(); // Pour suivre la durée écoulée
+        let boss = null; // Un seul boss à la fois
+        let lastBossTime = 0;
+        let bossInterval = 45000; // 45 secondes
+        let enemyBullets = [];
+        let bonusLives = [];
+        const bonusLifeImg = new Image();
+        bonusLifeImg.src = "./image/life.png";
+
+        document.getElementById("homeBtn").addEventListener("click", () => {
+            window.location.href = "./index.html";
         });
 
-        bullets.forEach((bullet, bIndex) => {
-            if (
-                bullet.y < boss.y + boss.height &&
-                bullet.y + bullet.height > boss.y &&
-                bullet.x < boss.x + boss.width &&
-                bullet.x + bullet.width > boss.x
-            ) {
-                bullets.splice(bIndex, 1);
-                boss.life--;
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d");
+        const xwingImg = new Image();
+        xwingImg.src = "./image/x-wing.png";
 
-                if (boss.life <= 0) {
-                    boss = null;
-                    score += 50;
-                }
-            }
-        });
-    }
-
-    function drawBossBullets() {
-    if (!boss || !boss.bullets) return;
-
-        ctx.fillStyle = "blue";
-        boss.bullets.forEach((b) => {
-            ctx.fillRect(b.x, b.y, b.width, b.height);
-        });
-    }
-
-    /* Le jeu */
-
-    let lastSpawn = 0;
-    let spawnDelay = 5000; // 3 secondes
-    let lastBonusSpawn = 0;
-    let bonusInterval = 20000 + Math.random() * 30000; // entre 20 et 50 secondes
-    let lastEnemyShot = 0;
-    let enemyShotInterval = 500 + Math.random() * 1500; // toutes les 0.5 à 2 sec
-
-    function gameLoop(timestamp) {
-        if (!boss && timestamp - lastBossTime > bossInterval) {
-            spawnBoss();
-            lastBossTime = timestamp;
-        }
-
-        if (timestamp - lastEnemyShot > enemyShotInterval && enemies.length > 0) {
-        // Choisir un ennemi au hasard
-        const shooter = enemies[Math.floor(Math.random() * enemies.length)];
-
-        enemyBullets.push({
-            x: shooter.x + shooter.width / 2 - 3,
-            y: shooter.y + shooter.height,
-            width: 6,
-            height: 12,
+        /* Le joueur */
+        let player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 80,
+            width: 50,
+            height: 50,
             speed: 4
+        };
+        let keys = {};
+        document.addEventListener("keydown", (e) => keys[e.key] = true);
+        document.addEventListener("keyup", (e) => keys[e.key] = false);
+
+        function drawPlayer() {
+            if (isInvincible) {
+                // Clignoter une frame sur deux
+                if (Math.floor(performance.now() / 100) % 2 === 0) return;
+            }
+            ctx.drawImage(xwingImg, player.x, player.y, player.width, player.height);
+        }
+
+
+        function update() {
+            if (keys["q"] && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (keys["d"] && player.x + player.width < canvas.width) {
+                player.x += player.speed;
+            }
+            if (keys["z"] && player.y > 0) {
+                player.y -= player.speed;
+            }
+            if (keys["s"] && player.y + player.height < canvas.height) {
+                player.y += player.speed;
+            }
+        }
+
+        canvas.addEventListener("mousedown", (e) => {
+            if (e.button === 0 && !isShooting) { // 0 = clic gauche
+                shoot();
+                laserSound.currentTime = 0;
+                laserSound.play();
+                isShooting = true;
+            }
         });
 
-        lastEnemyShot = timestamp;
-        enemyShotInterval = 500 + Math.random() * 1500; // recalculer pour la prochaine fois
+        canvas.addEventListener("mouseup", (e) => {
+            if (e.button === 0) {
+                isShooting = false;
+            }
+        });
+
+        /* Les tirs laser */
+        let bullets = [];
+        let isShooting = false;
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && !isShooting) {
+                shoot();
+                laserSound.currentTime = 0;
+                laserSound.play();
+                isShooting = true;
+            }
+        });
+        document.addEventListener("keyup", (e) => {
+            if (e.code === "Space") {
+                isShooting = false;
+            }
+        });
+
+        function updateBullets() {
+            bullets.forEach((b, i) => {
+                b.y -= b.speed;
+                if (b.y + b.height < 0) bullets.splice(i, 1);
+            });
         }
 
-        if (isGameOver) return;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (timestamp - lastSpawn > spawnDelay) {
-            spawnEnemies();
-            lastSpawn = timestamp;
+        function drawBullets() {
+            ctx.fillStyle = "red";
+            bullets.forEach((b) => {
+                ctx.fillRect(b.x, b.y, b.width, b.height);
+            });
         }
 
-        if (timestamp - lastBonusSpawn > bonusInterval) {
-            spawnBonusLife();
-            lastBonusSpawn = timestamp;
-            bonusInterval = 10000 + Math.random() * 10000;
+        function shoot() {
+            const bulletSpeed = 7;
+            // Taille des tirs
+            let bulletWidth = 5;
+            let bulletHeight = 20;
+            // Calcul des positions selon score
+            if (score >= 200) {
+                bullets.push(
+                    { x: player.x + 5, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
+                    { x: player.x + player.width / 2 - bulletWidth / 2, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
+                    { x: player.x + player.width - 5 - bulletWidth, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
+                );
+            } else if (score >= 75) {
+                bullets.push(
+                    { x: player.x + 5, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed },
+                    { x: player.x + player.width - 5 - bulletWidth, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
+                );
+            } else {
+                bullets.push(
+                    { x: player.x + player.width / 2 - bulletWidth / 2, y: player.y, width: bulletWidth, height: bulletHeight, speed: bulletSpeed }
+                );
+            }
         }
 
-        updateBoss();
-        drawBoss();
-        drawBossBullets();
-        checkBossBullets();
+        /* Les ennemies */
+        let enemies = [];
+        const tie_fighterImg = new Image();
+        tie_fighterImg.src = "./image/TIE-fighter.png";
 
-        updateEnemyBullets();
-        drawEnemyBullets();
-        checkEnemyBulletHits();
+        function spawnEnemies() {
+            const enemyCount = 5; // ou n’importe quel nombre
+            const maxSpeed = 2;   // tu peux ajuster ça plus tard
+            for (let i = 0; i < enemyCount; i++) {
+                const speed = 1 + Math.random() * (maxSpeed - 1); // entre 1 et maxSpeed
+                enemies.push({
+                    x: Math.random() * (canvas.width - 40),
+                    y: -40,
+                    width: 40,
+                    height: 40,
+                    speed: speed
+                });
+            }
+        }
 
-        updateBonusLives();
-        drawBonusLives();
-        checkBonusLifeCollision();
+        function updateEnemies() {
+            enemies.forEach(enemy => {
+                enemy.y += enemy.speed;
+            });
+        }
 
-        update();
-        updateBullets();
-        updateEnemies();
-        checkCollisions();
-        checkPlayerCollision();
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                ctx.drawImage(tie_fighterImg, enemy.x, enemy.y, enemy.width, enemy.height);
+            });
+        }
 
-        drawPlayer();
-        drawBullets();
-        drawEnemies();
-        drawScore();
-        drawLives();
+        function updateEnemyBullets() {
+            enemyBullets.forEach((b, i) => {
+                b.y += b.speed;
+                if (b.y > canvas.height) enemyBullets.splice(i, 1);
+            });
+        }
 
-        animationId = requestAnimationFrame(gameLoop);
-    }
+        function drawEnemyBullets() {
+            ctx.fillStyle = "green";
+            enemyBullets.forEach((b) => {
+                ctx.fillRect(b.x, b.y, b.width, b.height);
+            });
+        }
 
-    document.getElementById("restartBtn").addEventListener("click", () => {
-        // Reset score, vies, ennemis, etc.
-        score = 0;
-        lives = 3;
-        enemies = [];
-        bullets = [];
-        isGameOver = false;
-        lastSpawn = 0;
+        /* Collisions */
+        function checkCollisions() {
+            bullets.forEach((bullet, bIndex) => {
+                enemies.forEach((enemy, eIndex) => {
+                    if (
+                        bullet.x < enemy.x + enemy.width &&
+                        bullet.x + bullet.width > enemy.x &&
+                        bullet.y < enemy.y + enemy.height &&
+                        bullet.y + bullet.height > enemy.y
+                    ) {
+                        bullets.splice(bIndex, 1);
+                        enemies.splice(eIndex, 1);
+                        explosionSound.play();
+                        score += 1
+                    }
+                });
+            });
+        }
 
-        // Reset position du joueur
-        player.x = canvas.width / 2 - player.width / 2;
-        player.y = canvas.height - 80;
+        function checkPlayerCollision() {
+            if (isGameOver || isInvincible) return;
+            enemies.forEach((enemy, index) => {
+                if (
+                    player.x < enemy.x + enemy.width &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + enemy.height &&
+                    player.y + player.height > enemy.y
+                ) {
+                    enemies.splice(index, 1);
+                    lives--;
+                    isInvincible = true;
+                    invincibilityStart = performance.now();
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+        }
 
-        // Masquer le bouton
-        document.getElementById("restartBtn").style.display = "none";
-        document.getElementById("homeBtn").style.display = "none";
 
-        // Relancer la boucle
-        requestAnimationFrame(gameLoop);
-    });
+        function checkBonusLifeCollision() {
+            bonusLives.forEach((life, index) => {
+                if (
+                    player.x < life.x + life.width &&
+                    player.x + player.width > life.x &&
+                    player.y < life.y + life.height &&
+                    player.y + player.height > life.y
+                ) {
+                    bonusLives.splice(index, 1);
+                    lives++;
+                }
+            });
+        }
 
-    // Premier appel avec timestamp
-    requestAnimationFrame(gameLoop);;
-  </script>
+        function checkEnemyBulletHits() {
+            enemyBullets.forEach((b, i) => {
+                if (
+                    b.x < player.x + player.width &&
+                    b.x + b.width > player.x &&
+                    b.y < player.y + player.height &&
+                    b.y + b.height > player.y
+                ) {
+                    enemyBullets.splice(i, 1);
+                    if (!isInvincible) {
+                        lives--;
+                        isInvincible = true;
+                        invincibilityStart = performance.now();
+                    }
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+        }
+
+        /* Effets sonores */
+        const laserSound = new Audio("./music/blaster.mp3");
+        const explosionSound = new Audio("./music/death.mp3");
+
+        /* Score */
+        let score = 0;
+
+        function drawScore() {
+            ctx.fillText("Laser: " + specialBullets, 10, 60);
+            ctx.textAlign = "left";
+            ctx.fillStyle = "yellow";
+            ctx.font = "24px Rebellion";
+            ctx.fillText("Score: " + score, 10, 30);
+        }
+
+        /* Vies */
+        let lives = 3;
+
+        function drawLives() {
+            ctx.textAlign = "left";
+            ctx.fillStyle = "yellow";
+            ctx.font = "24px Rebellion";
+            ctx.fillText("Vies: " + lives, canvas.width - 120, 30);
+        }
+
+        function spawnBonusLife() {
+            const speed = 0.5
+            bonusLives.push({
+                x: Math.random() * (canvas.width - 30),
+                y: -30,
+                width: 30,
+                height: 30,
+                speed: speed
+            });
+        }
+
+        function updateBonusLives() {
+            bonusLives.forEach((life, index) => {
+                life.y += life.speed;
+                // Supprimer si hors écran
+                if (life.y > canvas.height) {
+                    bonusLives.splice(index, 1);
+                }
+            });
+        }
+
+        function drawBonusLives() {
+            bonusLives.forEach(life => {
+                ctx.drawImage(bonusLifeImg, life.x, life.y, life.width, life.height);
+            });
+        }
+
+        /* Game Over */
+        let isGameOver = false;
+        let isInvincible = false;
+        let invincibilityStart = 0;
+        let invincibilityDuration = 3000; // 3 secondes
+
+        function gameOver() {
+            isGameOver = true;
+            ctx.fillStyle = "red";
+            ctx.font = "48px Rebellion";
+            ctx.textAlign = "center";
+            ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+            const restartBtn = document.getElementById("restartBtn");
+            const homeBtn = document.getElementById("homeBtn");
+            restartBtn.style.display = "block";
+            homeBtn.style.display = "block";
+            restartBtn.style.top = canvas.offsetTop + canvas.height / 2 + 40 + "px";
+            homeBtn.style.top = canvas.offsetTop + canvas.height / 2 + 90 + "px";
+        }
+
+        /* Boss */
+        function spawnBoss() {
+            const level = Math.floor(Math.random() * 3) + 1; // Niveau entre 1 et 3
+            const bossImg = new Image();
+            bossImg.src = `./image/boss${level}.png`;
+            bossImg.onload = () => {
+                // Temps écoulé en secondes
+                const elapsed = (performance.now() - gameStartTime) / 1000;
+                // Facteurs de difficulté basés sur le temps
+                const lifeMultiplier = 1 + elapsed / 60; // +100% de vie après 1 minute
+                const speedMultiplier = 1 + elapsed / 90; // +100% vitesse après 1min30
+                const baseLife = level * 20;
+                const speed = 0.5 * speedMultiplier;
+                boss = {
+                    x: canvas.width / 2 - 100,
+                    y: 50,
+                    width: 200,
+                    height: 120,
+                    level: level,
+                    life: Math.round(baseLife * lifeMultiplier),
+                    maxLife: Math.round(baseLife * lifeMultiplier),
+                    speed: speed,
+                    bullets: [],
+                    img: bossImg,
+                    shootCooldown: 0
+                };
+            };
+        }
+
+
+        function drawBoss() {
+            if (boss) {
+                ctx.drawImage(boss.img, boss.x, boss.y, boss.width, boss.height);
+                // Barre de vie
+                const barWidth = 200;
+                const barHeight = 15;
+                const barX = canvas.width / 2 - barWidth / 2;
+                const barY = 10;
+                ctx.fillStyle = "black";
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+                ctx.fillStyle = "red";
+                ctx.fillRect(barX, barY, (boss.life / boss.maxLife) * barWidth, barHeight);
+                ctx.strokeStyle = "white";
+                ctx.strokeRect(barX, barY, barWidth, barHeight);
+            }
+        }
+
+        function updateBoss() {
+            if (!boss) return;
+            // Mouvement gauche-droite automatique
+            boss.x += boss.speed;
+            if (boss.x <= 0 || boss.x + boss.width >= canvas.width) {
+                boss.speed *= -1;
+            }
+            // Attaque selon niveau
+            boss.shootCooldown--;
+            if (boss.shootCooldown <= 0) {
+                shootBoss();
+                const elapsed = (performance.now() - gameStartTime) / 1000;
+                const baseCooldown = 60 - boss.level * 10;
+                const minCooldown = 10;
+                boss.shootCooldown = Math.max(minCooldown, baseCooldown - elapsed / 10);
+
+            }
+            // Update bullets
+            if (!boss || !boss.bullets) return;
+            boss.bullets.forEach((b, i) => {
+                b.y += b.speed;
+                if (b.dx) b.x += b.dx * 2;
+                if (b.y > canvas.height) boss.bullets.splice(i, 1);
+            });
+        }
+
+        function shootBoss() {
+            if (!boss) return;
+            const elapsed = (performance.now() - gameStartTime) / 1000;
+            const bulletSpeed = 2 + boss.level + elapsed / 60; // Augmente avec le temps
+            if (boss.level === 1) {
+                // Simple tir central
+                boss.bullets.push({
+                    x: boss.x + boss.width / 2 - 5,
+                    y: boss.y + boss.height,
+                    width: 10,
+                    height: 20,
+                    speed: bulletSpeed
+                });
+            }
+            if (boss.level === 2) {
+                // Double tir
+                boss.bullets.push(
+                    {
+                        x: boss.x + 40,
+                        y: boss.y + boss.height,
+                        width: 10,
+                        height: 20,
+                        speed: bulletSpeed
+                    },
+                    {
+                        x: boss.x + boss.width - 50,
+                        y: boss.y + boss.height,
+                        width: 10,
+                        height: 20,
+                        speed: bulletSpeed
+                    }
+                );
+            }
+            if (boss.level === 3) {
+                // Triple tir en éventail
+                boss.bullets.push(
+                    { x: boss.x + 40, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: -1 },
+                    { x: boss.x + boss.width / 2 - 4, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: 0 },
+                    { x: boss.x + boss.width - 50, y: boss.y + boss.height, width: 8, height: 20, speed: bulletSpeed, dx: 1 }
+                );
+            }
+        }
+
+        function drawBossBullets() {
+            if (!boss || !boss.bullets) return;
+
+            ctx.fillStyle = "blue";
+            boss.bullets.forEach((b) => {
+                ctx.fillRect(b.x, b.y, b.width, b.height);
+            });
+        }
+
+        function checkBossBullets() {
+            if (!boss || !boss.bullets) return;
+            // --------- COLLISIONS TIRS DU BOSS → JOUEUR ----------
+            const toRemoveBossBullets = [];
+            boss.bullets.forEach((b, i) => {
+                if (
+                    b.x < player.x + player.width &&
+                    b.x + b.width > player.x &&
+                    b.y < player.y + player.height &&
+                    b.y + b.height > player.y
+                ) {
+                    toRemoveBossBullets.push(i);
+
+                    if (!isInvincible) {
+                        lives--;
+                        isInvincible = true;
+                        invincibilityStart = performance.now();
+                    }
+
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+            // Supprimer après la boucle pour éviter conflits
+            for (let i = toRemoveBossBullets.length - 1; i >= 0; i--) {
+                boss.bullets.splice(toRemoveBossBullets[i], 1);
+            }
+            // --------- COLLISIONS TIRS DU JOUEUR → BOSS ----------
+            let bossDefeated = false;
+            const toRemoveBullets = [];
+            bullets.forEach((bullet, bIndex) => {
+                if (
+                    bullet.y < boss.y + boss.height &&
+                    bullet.y + bullet.height > boss.y &&
+                    bullet.x < boss.x + boss.width &&
+                    bullet.x + bullet.width > boss.x
+                ) {
+                    toRemoveBullets.push(bIndex);
+                    boss.life--;
+
+                    if (boss.life <= 0) {
+                        bossDefeated = true;
+                        score += 50;
+                        lives++; // Gagner une vie à chaque boss tué
+                    }
+                }
+            });
+            // Supprimer les bullets après la boucle
+            for (let i = toRemoveBullets.length - 1; i >= 0; i--) {
+                bullets.splice(toRemoveBullets[i], 1);
+            }
+            if (bossDefeated) {
+                boss = null;
+                if (!isFirstBoss) {
+                    lastBossTime = performance.now(); // redémarrer le timer
+                } else {
+                    isFirstBoss = false; // la prochaine fois, on redémarrera bien le timer
+                }
+
+            }
+        }
+
+        /* Boost spécial */
+        function updateSpecialBonus() {
+            if (specialBonus) {
+                specialBonus.y += specialBonus.speed;
+                if (specialBonus.y > canvas.height) specialBonus = null;
+            }
+        }
+
+        function checkSpecialBonusCollision() {
+            if (specialBonus && player.x < specialBonus.x + specialBonus.width &&
+                player.x + player.width > specialBonus.x &&
+                player.y < specialBonus.y + specialBonus.height &&
+                player.y + player.height > specialBonus.y) {
+                specialBullets++;
+                specialBonus = null;
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "t" && !isUsingSpecial && specialBullets > 0) {
+                specialBullets--;
+                isUsingSpecial = true;
+                specialStartTime = performance.now();
+            }
+        });
+
+        function drawSpecialBonus() {
+            if (specialBonus) {
+                ctx.drawImage(specialBonusImg, specialBonus.x, specialBonus.y, specialBonus.width, specialBonus.height);
+            }
+        }
+
+        /* Le jeu */
+        let lastSpawn = 0;
+        let spawnDelay = 5000; // 3 secondes
+        let lastBonusSpawn = 0;
+        let specialBonus = null;
+        let lastSpecialBonusTime = 0;
+        let specialBonusInterval = 15000 + Math.random() * 15000; // entre 15 et 30 sec
+
+        function spawnSpecialBonus() {
+            specialBonus = {
+                x: Math.random() * (canvas.width - 30),
+                y: -30,
+                width: 30,
+                height: 30,
+                speed: 1
+            };
+        }
+
+        let bonusInterval = 20000 + Math.random() * 30000; // entre 20 et 50 secondes
+        let lastEnemyShot = 0;
+        let enemyShotInterval = 500 + Math.random() * 1500; // toutes les 0.5 à 2 sec
+
+        function gameLoop(timestamp) {
+            if (!boss && timestamp - lastBossTime > bossInterval) {
+                spawnBoss();
+                lastBossTime = timestamp;
+            }
+            if (timestamp - lastEnemyShot > enemyShotInterval && enemies.length > 0) {
+                // Choisir un ennemi au hasard
+                const shooter = enemies[Math.floor(Math.random() * enemies.length)];
+                enemyBullets.push({
+                    x: shooter.x + shooter.width / 2 - 3,
+                    y: shooter.y + shooter.height,
+                    width: 6,
+                    height: 12,
+                    speed: 4
+                });
+                lastEnemyShot = timestamp;
+                enemyShotInterval = 500 + Math.random() * 1500; // recalculer pour la prochaine fois
+            }
+            if (isGameOver) return;
+            if (isInvincible && timestamp - invincibilityStart > invincibilityDuration) {
+                isInvincible = false;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (timestamp - lastSpawn > spawnDelay) {
+                spawnEnemies();
+                lastSpawn = timestamp;
+            }
+            if (timestamp - lastBonusSpawn > bonusInterval) {
+                spawnBonusLife();
+                lastBonusSpawn = timestamp;
+                bonusInterval = 10000 + Math.random() * 10000;
+            }
+            updateBoss();
+            drawBoss();
+            drawBossBullets();
+            checkBossBullets();
+
+            updateEnemyBullets();
+            drawEnemyBullets();
+            checkEnemyBulletHits();
+
+            updateBonusLives();
+            drawBonusLives();
+            checkBonusLifeCollision();
+
+            update();
+            updateBullets();
+            updateEnemies();
+            checkCollisions();
+            checkPlayerCollision();
+
+            if (timestamp - lastSpecialBonusTime > specialBonusInterval && !specialBonus) {
+                spawnSpecialBonus();
+                lastSpecialBonusTime = timestamp;
+                specialBonusInterval = 15000 + Math.random() * 15000;
+            }
+
+            updateSpecialBonus();
+            drawSpecialBonus();
+            checkSpecialBonusCollision();
+            drawPlayer();
+            drawBullets();
+            drawEnemies();
+            drawScore();
+            drawLives();
+
+            if (isUsingSpecial) {
+                const elapsedSpecial = timestamp - specialStartTime;
+
+                // Dessiner le rayon laser avec une image
+                ctx.strokeStyle = "rgb(0, 255, 76)";
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(player.x + player.width / 2, 0);
+                ctx.lineTo(player.x + player.width / 2, canvas.height);
+                ctx.stroke();
+
+                // Le reste ne change pas
+                enemies = enemies.filter(e => {
+                    if (e.x < player.x + player.width / 2 + 5 && e.x + e.width > player.x + player.width / 2 - 5) {
+                        score++;
+                        explosionSound.play();
+                        return false;
+                    }
+                    return true;
+                });
+
+                enemyBullets = enemyBullets.filter(b => !(b.x < player.x + player.width / 2 + 5 && b.x + b.width > player.x + player.width / 2 - 5));
+
+                if (boss && boss.bullets) {
+                    boss.bullets = boss.bullets.filter(b => !(b.x < player.x + player.width / 2 + 5 && b.x + b.width > player.x + player.width / 2 - 5));
+                }
+
+                if (boss) {
+                    boss.life -= 0.5;
+                    if (boss.life <= 0) {
+                        boss = null;
+                        score += 50;
+                        lives++;
+                        if (!isFirstBoss) {
+                            lastBossTime = performance.now();
+                        } else {
+                            isFirstBoss = false;
+                        }
+                    }
+                }
+
+                if (elapsedSpecial > specialDuration) {
+                    isUsingSpecial = false;
+                }
+            }
+
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        document.getElementById("restartBtn").addEventListener("click", () => {
+            window.location.href = window.location.href;
+        });
+
+        // Premier appel avec timestamp
+        // Attendre que toutes les images soient chargées avant de lancer le jeu
+        let imagesToLoad = [xwingImg, tie_fighterImg, bonusLifeImg, specialBonusImg];
+        let imagesLoaded = 0;
+
+        imagesToLoad.forEach(img => {
+            img.onload = () => {
+                imagesLoaded++;
+                if (imagesLoaded === imagesToLoad.length) {
+                    requestAnimationFrame(gameLoop);
+                }
+            };
+        });
+    </script>
 </body>
+
 </html>
