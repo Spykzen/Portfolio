@@ -1,7 +1,7 @@
 /* Sytle commun : couleur (noir et jaune) + police d'écriture */
 html{
     color: black;
-    -webkit-text-stroke: 1px yellow;
+    -webkit-text-stroke: 1.5px yellow;
 }
 @font-face {
     font-family: 'Rebellion';
@@ -35,15 +35,16 @@ nav{
 }
 .navbar a:hover {
     background-color: rgb(44, 44, 44);
-    border-radius: 12%;
+    border-radius: 20px;
 }
 .navbar a:active{
     background-color: yellow;
     color: black;
+    text-decoration: underline black;
     box-shadow: 5px 5px 10px rgb(250, 162, 0);
 }
 .page_actu{
-    text-decoration: underline;
+    text-decoration: underline yellow;
 }
 .logo{
     height: 50px;

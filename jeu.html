@@ -21,6 +21,34 @@
         <div>
             <canvas id="game" width="700" height="704"></canvas>
         </div>
+    <section class="commande">
+        <div>Commandes</div>
+        <div>Haut : z</div>
+        <div>Bas : s</div>
+        <div>Gauche : q</div>
+        <div>Droite : d</div>
+        <div>Tire : espace</div>
+        <div>Rayon laser : t</div>
+        <button onclick="togglePlay()" class="musicJeu" id="musicBtn">Musique ▶</button>
+
+            <audio id="audio" src="./music/AnakinVs.Obi-Wan.mp3" loop></audio>
+            
+            <script>
+                function togglePlay() {
+                    const audio = document.getElementById('audio');
+                    const btn = document.getElementById('musicBtn');
+                
+                    if (audio.paused) {
+                        audio.play();
+                        btn.textContent = 'Pause ⏸';
+                    } 
+                    else {
+                        audio.pause();
+                        btn.textContent = 'Musique ▶';
+                    }
+                }
+            </script>
+    </section>
     </div>
     <button id="restartBtn">Rejouer</button>
 

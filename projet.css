@@ -6,7 +6,6 @@ aside{
 h1{
     padding-left: 2%;
     padding-bottom: 30px;
-    text-decoration: underline double;
     font-size: 200%;
 }
 .menu {
@@ -75,4 +74,8 @@ input:checked + label + .contenu {
 .fermer{
     margin-top: 15px;
     background-color: rgba(101, 101, 101, 0.3);
+}
+.technique {
+    background-color: yellow;
+    -webkit-text-stroke: black;
 }

@@ -5,7 +5,7 @@ canvas {
 }
 #restartBtn {
     position: absolute;
-    left: 55%;
+    left: 45%;
     transform: translateX(-50%);
     top: 55%; /* juste sous le Game Over */
     padding: 12px 24px;
@@ -22,6 +22,7 @@ canvas {
     align-items: center;
 }
 #homeBtn {
+    margin-right: 1%;
     padding: 10px 20px;
     font-size: 18px;
     background-color: #111;
@@ -29,4 +30,38 @@ canvas {
     border-radius: 8px;
     cursor: pointer;
     display: block;
+}
+.commande {
+    display: flex;
+    flex-direction: column;
+}
+.commande div {
+    display: flex;
+    justify-content: center;
+    margin: 1%; 
+    margin-left: 15%;
+    padding: 2%;
+    width: 100%;
+    font-size: 150%;
+    border: 0.5px solid yellow;
+}
+.musicJeu {
+    display: flex;
+    justify-content: center;
+    margin: 1%; 
+    margin-left: 15%;
+    padding: 2%;
+    font-size: 150%;
+    width: 100%;
+    border: 0.5px solid yellow;
+    border-radius: 10px;
+    background: none;
+}
+.musicJeu:hover {
+    background-color: rgba(29, 29, 29,0.5);
+    cursor: pointer;
+}
+.musicJeu:active{
+    background-color: yellow;
+    color: black;
 }
