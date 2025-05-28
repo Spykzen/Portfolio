@@ -48,7 +48,7 @@
 
 @keyframes crawl {
     0% {
-      transform: rotateX(25deg) translateY(63vh) scale(1);
+      transform: rotateX(25deg) translateY(vh) scale(1);
     }
     100% {
       transform: rotateX(25deg) translateY(-75vh) scale(0.5);
@@ -57,5 +57,64 @@
 
 h1 {
     text-align: center;
-    font-size: 200%;
+    font-size: 210%;
+    color: black;
+    -webkit-text-stroke: 2.5px yellow;
+}
+h2 {
+    border-bottom: 2px solid yellow;
+}
+h2 + div {
+    display: flex;
+    flex-direction: column;
+}
+.maps {
+    width: 40px;
+    height: 60px;
+}
+.conteneur_maps {
+    display: flex;
+    justify-content: end;
+}
+.tmp {
+    display: flex;
+    align-items: center;
+    gap: 3%;
+}
+ul {
+    margin: 0;
+}
+li {
+    list-style-type: none;
+    margin-bottom: 2%;
+    width: 20%;
+}
+input {
+    display: none;
+}
+label {
+    cursor: pointer;
+}
+.chevron {
+    height: 13%;
+    width: 13%;
+}
+.contenu {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    text-align: start;
+    margin-left: 4%;
+    width: 1000%;
+}
+.contenu > li {
+    margin: 1%;
+}
+input:checked + label + .contenu {
+    max-height: 10000px;
+}
+label > div {
+    display: flex;
+    align-items: center;
+    gap: 2%;
 }

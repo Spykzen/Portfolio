@@ -54,62 +54,119 @@
     <div class="controls">
         <button onclick="toggleAnimation()" class="start-animation" id="animationBtn">Lancer l'animation</button>
         <audio id="audio" src="./music/generique.mp3" loop></audio>
-      </div>
+    </div>
     
-      <div class="star-wars">
+    <div class="star-wars">
         <div class="crawl" id="crawl">
-          <div class="content" id="content">
+            <div class="content" id="content">
             <h1>Qui suis-je ?</h1>
-            Je suis Nicolas Battista, un étudiant en première année de BUT informatique. J'ai choisi le parcours A : "Développement d'application" 
-              pour ma seconde année car j'aime développer des sites internet ainsi que programmer en Java. J'ai suivi le cursus général au lycée, 
-              avec les spécialités mathématiques et NSI (ainsi que physique-chimie en première), avec mathématiques expertes en option en Terminale.
-              J'ai donc obtenu mon BAC général avec mention assez bien et mon brevet avec mention très bien.
-            </p>
-            <p>
-              Grâce au BUT informatique, je me suis découvert une passion pour le développement de sites internet. Je voudrais approfondir mes connaissances
-              dans le domaine du développement Web, notamment en apprenant les langages PHP et JavaScript pour améliorer mes sites internet. 
-              J'envisage donc de devenir développeur Web après mes études.
-            </p>
-            <p>
-              
-            </p>
-          </div>
+
+            <h2>Mon profil</h2>
+            <div>
+                <span>Nom : Battista</span>
+                <span>Prénom : Nicolas</span>
+                <span>Age : 19 ans</span>
+                <span>Date de naissance : 29/03/2006</span>
+                <span>Nationalité : Française</span>
+            </div>
+
+            <h2>Mon parcours</h2>
+            <div>
+                <div class="tmp">
+                    <p>2024/2025 : Première année en BUT informatique à l'I.U.T.2 - Bâtiment Doyen Gosse à Grenoble</p>
+                    <a href="https://www.google.fr/maps/place/I.U.T.2+Institut+Universitaire+de+Technologie+-+B%C3%A2timent+Doyen+Gosse/@45.1918192,5.7145197,16z/data=!3m1!4b1!4m6!3m5!1s0x478af486d4db2145:0x5855b4bb6787a494!8m2!3d45.1918154!4d5.7170946!16s%2Fg%2F1tf56s5b?hl=fr&entry=ttu&g_ep=EgoyMDI1MDUyMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="conteneur_maps"><img src="./image/maps.png" alt="Logo maps" class="maps"></a>
+                </div>
+                <div class="tmp">
+                    <div>
+                        <p>2023/2024 : Terminale générale au lycée Camille Corot à Morestel | Spécialités Maths + NSI et option Maths expertes</p>               
+                        <p>2022/2023 : Première génrale au lycée Camille Corot à Morestel | Spécialités Maths + NSI + Physique-Chimie</p>                
+                        <p>2021/2022 : Seconde générale au lycée Camille Corot à Morestel</p>
+                    </div>
+                    <a href="https://www.google.fr/maps/place/Lycee+Camille+Corot/@45.6746407,5.4743861,17z/data=!3m1!4b1!4m6!3m5!1s0x478b3c6b8a099491:0x18b15f2680f795a1!8m2!3d45.674637!4d5.476961!16s%2Fg%2F11wr9g7rh7?hl=fr&entry=ttu&g_ep=EgoyMDI1MDUyMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="conteneur_maps"><img src="./image/maps.png" alt="Logo maps" class="maps"></a>
+                </div>
+                <div class="tmp">
+                    <p>2017/2021 : Collège les Pierres Plantes à Montalieu-Vercieu</p>
+                    <a href="https://www.google.fr/maps/place/Coll%C3%A8ge+Les+Pierres+Plantes/@45.8062379,5.3965887,17z/data=!3m1!4b1!4m6!3m5!1s0x478b486f93fb0b8d:0xb56bc24023679fdb!8m2!3d45.8062342!4d5.3991636!16s%2Fg%2F1tf01c42?hl=fr&entry=ttu&g_ep=EgoyMDI1MDUyMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="conteneur_maps"><img src="./image/maps.png" alt="Logo maps" class="maps"></a>
+                </div>
+                <div class="tmp">
+                    <p>2009/2017 : Ecole primaire la Rose des Vents à Courtenay</p>
+                    <a href="https://www.google.fr/maps/place/142+Saint-Roch,+38510+Courtenay/@45.7290119,5.3808834,18z/data=!3m1!4b1!4m6!3m5!1s0x478b3762dcaee057:0xc65e8d088de42c41!8m2!3d45.72901!4d5.3821709!16s%2Fg%2F11lp1pt31_?hl=fr&entry=ttu&g_ep=EgoyMDI1MDUyMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="conteneur_maps"><img src="./image/maps.png" alt="Logo maps" class="maps"></a>
+                </div>
+            </div>
+
+            <h2>Mes caractéristiques</h2>
+                <ul>
+                    <li>Travailleur</li>
+                    <li>Déterminé</li>
+                    <li>Perfectionniste</li>
+                    <li>Prévenant</li>
+                </ul>
+            <h2>Mes passions</h2>
+                <ul>
+                    <li>Star Wars</li>
+                    <li>
+                        <input type="checkbox" id="jeux">
+                        <label for="jeux">
+                            <div>Jeux vidéos <img src="./image/chevron-vers-le-bas.png" alt="menu_déroulant" class="chevron"></div>
+                        </label>
+                        <ul class="contenu">
+                            <li>Brawl Star</li>
+                            <li>Clash Royal</li>
+                            <li>Star Wars Jedi - Survivor</li>
+                            <li>Minecraft</li>
+                            <li>Fortnite</li>
+                            <li>Counter Strike 2</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="sports">
+                        <label for="sports">
+                            <div>Sports <img src="./image/chevron-vers-le-bas.png" alt="menu_déroulant" class="chevron"></div>
+                        </label>
+                        <ul class="contenu">
+                            <li>Badminton</li>
+                            <li>Ultimate</li>
+                            <li>Escalade</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
+    </div>
     
-      <script>
-        let isAnimating = false;
+    <script>
+    let isAnimating = false;
 
-        function toggleAnimation() {
-            const crawl = document.getElementById('crawl');
-            const content = document.getElementById('content');
-            const audio = document.getElementById('audio');
-            const animBtn = document.getElementById('animationBtn');
-            const musicBtn = document.getElementById('musicBtn');
+    function toggleAnimation() {
+        const crawl = document.getElementById('crawl');
+        const content = document.getElementById('content');
+        const audio = document.getElementById('audio');
+        const animBtn = document.getElementById('animationBtn');
+        const musicBtn = document.getElementById('musicBtn');
 
-            if (!isAnimating) {
-                // Démarrer l'animation
-                crawl.classList.add('animate');
-                isAnimating = true;
-                animBtn.textContent = 'Arrêter l\'animation';
+        if (!isAnimating) {
+            // Démarrer l'animation
+            crawl.classList.add('animate');
+            isAnimating = true;
+            animBtn.textContent = 'Arrêter l\'animation';
 
-                // Lancer la musique si elle n’est pas en cours
-                if (audio.paused) {
-                audio.play();
-                musicBtn.textContent = 'Pause ⏸';
-                }
-            } else {
-                // Arrêter l'animation
-                crawl.classList.remove('animate');
-                isAnimating = false;
-                animBtn.textContent = 'Lancer l\'animation';
-
-                // Remettre le texte en position normale (au centre)
-                content.style.animation = 'none'; // retire toute anim temporairement
-                void content.offsetWidth;         // force reflow
-                content.style.animation = null;   // permet de relancer plus tard
+            // Lancer la musique si elle n’est pas en cours
+            if (audio.paused) {
+            audio.play();
+            musicBtn.textContent = 'Pause ⏸';
             }
+        } else {
+            // Arrêter l'animation
+            crawl.classList.remove('animate');
+            isAnimating = false;
+            animBtn.textContent = 'Lancer l\'animation';
+
+            // Remettre le texte en position normale (au centre)
+            content.style.animation = 'none'; // retire toute anim temporairement
+            void content.offsetWidth;         // force reflow
+            content.style.animation = null;   // permet de relancer plus tard
         }
-      </script>
+    }
+    </script>
 </body>
 </html>
