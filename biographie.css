@@ -69,8 +69,8 @@ h2 + div {
     flex-direction: column;
 }
 .maps {
-    width: 40px;
-    height: 60px;
+    width: 30px;
+    height: 45px;
 }
 .conteneur_maps {
     display: flex;
@@ -81,13 +81,25 @@ h2 + div {
     align-items: center;
     gap: 3%;
 }
+.caracteristiques {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    
+}
+.sous_carac {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 ul {
     margin: 0;
 }
 li {
     list-style-type: none;
+    margin-top: 2%;
     margin-bottom: 2%;
-    width: 20%;
+    width: 75%;
 }
 input {
     display: none;
@@ -95,20 +107,17 @@ input {
 label {
     cursor: pointer;
 }
-.chevron {
-    height: 13%;
-    width: 13%;
-}
 .contenu {
     display: block;
     max-height: 0;
     overflow: hidden;
     text-align: start;
     margin-left: 4%;
-    width: 1000%;
+    width: 475%;
 }
 .contenu > li {
-    margin: 1%;
+    margin: 0.5%;
+    width: 100%;
 }
 input:checked + label + .contenu {
     max-height: 10000px;
@@ -117,4 +126,11 @@ label > div {
     display: flex;
     align-items: center;
     gap: 2%;
+    width: 100%;
+}
+.div_jeux {
+    width: 28%;
+}
+.div_sport {
+    width: 17%;
 }
