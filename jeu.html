@@ -16,39 +16,40 @@
         Ton navigateur ne supporte pas la vidéo.
     </video>
 
+
     <div id="gameWrapper">
         <button id="homeBtn">Accueil</button>
         <div>
             <canvas id="game" width="700" height="704"></canvas>
         </div>
-    <section class="commande">
-        <div>Commandes</div>
-        <div>Haut : z</div>
-        <div>Bas : s</div>
-        <div>Gauche : q</div>
-        <div>Droite : d</div>
-        <div>Tire : espace</div>
-        <div>Rayon laser : t</div>
-        <button onclick="togglePlay()" class="musicJeu" id="musicBtn">Musique ▶</button>
+        <section class="commande">
+            <div>Commandes</div>
+            <div>Haut : z</div>
+            <div>Bas : s</div>
+            <div>Gauche : q</div>
+            <div>Droite : d</div>
+            <div>Tire : espace</div>
+            <div>Rayon laser : t</div>
+            <button onclick="togglePlay()" class="musicJeu" id="musicBtn">Musique ▶</button>
 
             <audio id="audio" src="./music/AnakinVs.Obi-Wan.mp3" loop></audio>
-            
+
             <script>
                 function togglePlay() {
                     const audio = document.getElementById('audio');
                     const btn = document.getElementById('musicBtn');
-                
+
                     if (audio.paused) {
                         audio.play();
                         btn.textContent = 'Pause ⏸';
-                    } 
+                    }
                     else {
                         audio.pause();
                         btn.textContent = 'Musique ▶';
                     }
                 }
             </script>
-    </section>
+        </section>
     </div>
     <button id="restartBtn">Rejouer</button>
 
@@ -115,6 +116,7 @@
         }
 
         canvas.addEventListener("mousedown", (e) => {
+            if (isGameOver) return;
             if (e.button === 0 && !isShooting) { // 0 = clic gauche
                 shoot();
                 laserSound.currentTime = 0;
@@ -161,6 +163,8 @@
         }
 
         function shoot() {
+            if (isGameOver) return;  // ne pas tirer si game over
+
             const bulletSpeed = 7;
             // Taille des tirs
             let bulletWidth = 5;
@@ -205,10 +209,15 @@
         }
 
         function updateEnemies() {
-            enemies.forEach(enemy => {
-                enemy.y += enemy.speed;
-            });
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                enemies[i].y += enemies[i].speed;
+
+                if (enemies[i].y > canvas.height) {
+                    enemies.splice(i, 1); // Supprime l'ennemi s'il sort de l'écran
+                }
+            }
         }
+
 
         function drawEnemies() {
             enemies.forEach(enemy => {
@@ -308,6 +317,10 @@
         /* Effets sonores */
         const laserSound = new Audio("./music/blaster.mp3");
         const explosionSound = new Audio("./music/death.mp3");
+        const tieFireSound = new Audio("./music/tie_fire.mp3");
+        const specialLaserSound = new Audio("./music/laser.mp3");
+        const bossSpawnSound = new Audio("./music/spawn_boss.mp3");
+
 
         /* Score */
         let score = 0;
@@ -365,6 +378,8 @@
 
         function gameOver() {
             isGameOver = true;
+            bullets = [];
+            specialLasers = [];
             ctx.fillStyle = "red";
             ctx.font = "48px Rebellion";
             ctx.textAlign = "center";
@@ -392,7 +407,9 @@
                 const speed = 0.5 * speedMultiplier;
                 boss = {
                     x: canvas.width / 2 - 100,
-                    y: 50,
+                    y: -150, // Commence bien au-dessus de l'écran
+                    targetY: 50, // Position finale
+                    isSpawning: true,
                     width: 200,
                     height: 120,
                     level: level,
@@ -403,6 +420,8 @@
                     img: bossImg,
                     shootCooldown: 0
                 };
+                bossSpawnSound.currentTime = 0;
+                bossSpawnSound.play();
             };
         }
 
@@ -426,6 +445,16 @@
 
         function updateBoss() {
             if (!boss) return;
+            if (boss.isSpawning) {
+                boss.y += 2; // vitesse de descente
+
+                if (boss.y >= boss.targetY) {
+                    boss.y = boss.targetY;
+                    boss.isSpawning = false;
+                }
+
+                return; // Ne fait rien d’autre pendant l’animation
+            }
             // Mouvement gauche-droite automatique
             boss.x += boss.speed;
             if (boss.x <= 0 || boss.x + boss.width >= canvas.width) {
@@ -436,10 +465,9 @@
             if (boss.shootCooldown <= 0) {
                 shootBoss();
                 const elapsed = (performance.now() - gameStartTime) / 1000;
-                const baseCooldown = 60 - boss.level * 10;
-                const minCooldown = 10;
-                boss.shootCooldown = Math.max(minCooldown, baseCooldown - elapsed / 10);
-
+                const baseCooldown = 80 - boss.level * 8;  // ralentit le tir de base
+                const minCooldown = 20;                    // limite minimale un peu moins agressive
+                boss.shootCooldown = Math.max(minCooldown, baseCooldown - elapsed / 25);
             }
             // Update bullets
             if (!boss || !boss.bullets) return;
@@ -584,10 +612,13 @@
         }
 
         document.addEventListener("keydown", (e) => {
+            if (isGameOver) return; // empêcher actions
             if (e.key === "t" && !isUsingSpecial && specialBullets > 0) {
                 specialBullets--;
                 isUsingSpecial = true;
                 specialStartTime = performance.now();
+                specialLaserSound.currentTime = 0;
+                specialLaserSound.play();
             }
         });
 
@@ -602,8 +633,9 @@
         let spawnDelay = 5000; // 3 secondes
         let lastBonusSpawn = 0;
         let specialBonus = null;
-        let lastSpecialBonusTime = 0;
-        let specialBonusInterval = 15000 + Math.random() * 15000; // entre 15 et 30 sec
+        let lastSpecialBonusTime = 0; 2
+        let specialBonusInterval = 20000 + Math.random() * 40000; // entre 20 et 40 sec
+
 
         function spawnSpecialBonus() {
             specialBonus = {
@@ -615,7 +647,7 @@
             };
         }
 
-        let bonusInterval = 20000 + Math.random() * 30000; // entre 20 et 50 secondes
+        let bonusInterval = 30000 + Math.random() * 40000; // 30 à 70 sec
         let lastEnemyShot = 0;
         let enemyShotInterval = 500 + Math.random() * 1500; // toutes les 0.5 à 2 sec
 
@@ -627,13 +659,20 @@
             if (timestamp - lastEnemyShot > enemyShotInterval && enemies.length > 0) {
                 // Choisir un ennemi au hasard
                 const shooter = enemies[Math.floor(Math.random() * enemies.length)];
-                enemyBullets.push({
-                    x: shooter.x + shooter.width / 2 - 3,
-                    y: shooter.y + shooter.height,
-                    width: 6,
-                    height: 12,
-                    speed: 4
-                });
+                if (shooter.y + shooter.height < canvas.height) {
+                    enemyBullets.push({
+                        x: shooter.x + shooter.width / 2 - 3,
+                        y: shooter.y + shooter.height,
+                        width: 6,
+                        height: 12,
+                        speed: 4
+                    });
+                    tieFireSound.currentTime = 0;
+                    tieFireSound.play();
+                }
+
+                tieFireSound.currentTime = 0;
+                tieFireSound.play();
                 lastEnemyShot = timestamp;
                 enemyShotInterval = 500 + Math.random() * 1500; // recalculer pour la prochaine fois
             }
@@ -673,7 +712,7 @@
             if (timestamp - lastSpecialBonusTime > specialBonusInterval && !specialBonus) {
                 spawnSpecialBonus();
                 lastSpecialBonusTime = timestamp;
-                specialBonusInterval = 15000 + Math.random() * 15000;
+                specialBonusInterval = 20000 + Math.random() * 40000;
             }
 
             updateSpecialBonus();
@@ -689,7 +728,7 @@
                 const elapsedSpecial = timestamp - specialStartTime;
 
                 // Dessiner le rayon laser avec une image
-                ctx.strokeStyle = "rgb(0, 255, 76)";
+                ctx.strokeStyle = "rgb(0,206,209)";
                 ctx.lineWidth = 5;
                 ctx.beginPath();
                 ctx.moveTo(player.x + player.width / 2, 0);
