@@ -12,46 +12,62 @@
 }
 
 .star-wars {
-    margin-top: 7%;
-    perspective: 800px;
+    margin-top: 4%;
+    position: relative;
+    height: 100vh;
+    perspective: 1000px;
+}
+
+body.animation-active .star-wars {
+    height: 100vh;
     overflow: hidden;
 }
 
-.star-wars::after {
-    content: '';
+.fade-gradient {
     position: absolute;
     top: 0;
-    height: 15%;
     width: 100%;
+    height: 20%;
     background: linear-gradient(to top, transparent, black);
     pointer-events: none;
-  }
+    display: none;
+    z-index: 2;
+}
+
+.animate + .fade-gradient {
+    display: block;
+}
+
 .crawl {
+    position: absolute;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    transform-style: preserve-3d;
-    transform: rotateX(7deg);
     transform-origin: bottom center;
+    transform-style: preserve-3d;
+    transform: rotateX(15deg);
 }
 
+.animate .crawl {
+    bottom: 0;
+}
 .content {
     width: 70%;
     font-size: 130%;
     text-align: justify;
 }
 
-/* Animation appliquée au lancement */
 .animate .content {
-    animation: crawl 70s linear infinite;
+    animation: crawl 160s linear forwards;
 }
 
 @keyframes crawl {
     0% {
-      transform: rotateX(25deg) translateY(vh) scale(1);
+        transform: rotateX(15deg) translateZ(0) translateY(50%);
     }
     100% {
-      transform: rotateX(25deg) translateY(-75vh) scale(0.5);
+        transform: rotateX(15deg) translateZ(-300px) translateY(-500%);
     }
 }
 

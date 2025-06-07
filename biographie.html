@@ -141,42 +141,59 @@
                     <li>Développement Web</li>
                 </ul>
             </div>
-        </div>
+        </div>        
+        <div class="fade-gradient"></div>
     </div>
     
     <script>
-    let isAnimating = false;
-
-    function toggleAnimation() {
-        const crawl = document.getElementById('crawl');
-        const content = document.getElementById('content');
-        const audio = document.getElementById('audio');
-        const animBtn = document.getElementById('animationBtn');
-        const musicBtn = document.getElementById('musicBtn');
-
-        if (!isAnimating) {
-            // Démarrer l'animation
-            crawl.classList.add('animate');
-            isAnimating = true;
-            animBtn.textContent = 'Arrêter l\'animation';
-
-            // Lancer la musique si elle n’est pas en cours
-            if (audio.paused) {
-            audio.play();
-            musicBtn.textContent = 'Pause ⏸';
+        let isAnimating = false;
+        let crawlTimeout;
+    
+        function toggleAnimation() {
+            const crawl = document.getElementById('crawl');
+            const content = document.getElementById('content');
+            const audio = document.getElementById('audio');
+            const animBtn = document.getElementById('animationBtn');
+            const musicBtn = document.getElementById('musicBtn');
+    
+            if (!isAnimating) {
+                startAnimation();
+            } else {
+                stopAnimation();
             }
-        } else {
-            // Arrêter l'animation
-            crawl.classList.remove('animate');
-            isAnimating = false;
-            animBtn.textContent = 'Lancer l\'animation';
-
-            // Remettre le texte en position normale (au centre)
-            content.style.animation = 'none'; // retire toute anim temporairement
-            void content.offsetWidth;         // force reflow
-            content.style.animation = null;   // permet de relancer plus tard
+    
+            function startAnimation() {
+                document.body.classList.add('animation-active');
+                crawl.classList.add('animate');
+                isAnimating = true;
+                animBtn.textContent = 'Arrêter l\'animation';
+    
+                // Jouer musique si pas en cours
+                if (audio.paused) {
+                    audio.play();
+                    musicBtn.textContent = 'Pause ⏸';
+                }
+    
+                crawlTimeout = setTimeout(() => {
+                    stopAnimation();
+                    setTimeout(startAnimation, 0);
+                }, 55000);
+            }
+    
+            function stopAnimation() {
+                document.body.classList.remove('animation-active');
+                crawl.classList.remove('animate');
+                isAnimating = false;
+                animBtn.textContent = 'Lancer l\'animation';
+                clearTimeout(crawlTimeout);
+    
+                // Reset animation
+                content.style.animation = 'none';
+                void content.offsetWidth;
+                content.style.animation = null;
+            }
         }
-    }
     </script>
+    
 </body>
 </html>
